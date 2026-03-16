@@ -1,0 +1,2491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Anna's Learning House 🏠</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Anna's Learning House — Design System
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root {
+  --pink:#FF8FAB; --pink-l:#FFD6E0; --pink-p:#FFF0F5;
+  --purple:#B57BFF; --purple-l:#E5D4FF; --purple-p:#F8F0FF;
+  --yellow:#FFD166; --yellow-l:#FFF3CD;
+  --teal:#06D6A0; --teal-l:#CCFBF1;
+  --blue:#74B0FF; --blue-l:#DBEAFE;
+  --orange:#FF9F5B; --orange-l:#FFE8D5;
+  --green:#5CB85C; --green-l:#D4EDDA;
+  --red:#FF6B6B; --red-l:#FFE4E4;
+  --cream:#FFF8F3;
+  --wall:#FFE8F4; --floor:#F0D9B5; --wood:#C4875A;
+  --shadow:0 4px 16px rgba(0,0,0,0.1);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.15);
+  --r:16px; --r-lg:24px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
+html,body{width:100%;height:100%;font-family:'Nunito',sans-serif;background:var(--cream);overflow:hidden;}
+
+/* ── SCREENS ── */
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:stretch;justify-content:flex-start;}
+.screen.active{display:flex;}
+.screen-center{align-items:center;justify-content:center;}
+
+/* ── SHARED HEADER ── */
+.app-header{
+  background:linear-gradient(90deg,var(--pink),var(--purple));
+  padding:.55em 1.2em;display:flex;align-items:center;
+  justify-content:space-between;flex-shrink:0;height:56px;
+  box-shadow:0 3px 12px rgba(0,0,0,0.15);
+}
+.app-header h1{font-family:'Fredoka One',cursive;font-size:1.6rem;color:white;text-shadow:2px 2px 0 rgba(0,0,0,0.1);}
+.back-btn{
+  background:white;border:none;border-radius:12px;padding:.4em .9em;
+  font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;
+  color:#7B2D8B;box-shadow:0 2px 8px rgba(0,0,0,0.12);transition:all .2s;
+}
+.back-btn:hover{transform:scale(1.06);}
+
+/* ── ACTIVITY CONTENT AREA ── */
+.activity-body{
+  flex:1;overflow-y:auto;padding:1em;
+  display:flex;flex-direction:column;align-items:center;gap:.8em;
+}
+
+/* ── AI BUBBLE ── */
+.ai-bubble{
+  background:white;border-radius:20px 20px 20px 4px;
+  padding:.9em 1.2em;max-width:780px;width:100%;
+  box-shadow:var(--shadow);border:3px solid var(--purple-l);
+  font-size:clamp(1rem,2.5vw,1.15rem);color:#444;line-height:1.5;
+}
+.ai-bubble .cat{font-size:1.6rem;margin-right:.4em;}
+
+/* ── BUTTONS ── */
+.btn{
+  border:none;border-radius:var(--r);padding:.65em 1.3em;
+  font-family:'Fredoka One',cursive;font-size:1rem;
+  cursor:pointer;transition:all .2s;box-shadow:var(--shadow);
+}
+.btn:hover,.btn:active{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.btn:disabled{opacity:.4;transform:none;cursor:default;}
+.btn-primary{background:linear-gradient(135deg,var(--pink),var(--purple));color:white;}
+.btn-success{background:linear-gradient(135deg,var(--teal),#00B894);color:white;}
+.btn-info{background:linear-gradient(135deg,var(--blue),#5B8FFF);color:white;}
+.btn-warn{background:linear-gradient(135deg,var(--yellow),var(--orange));color:white;}
+.btn-danger{background:linear-gradient(135deg,var(--red),#FF8FAB);color:white;}
+.btn-ghost{background:white;color:#7B2D8B;border:3px solid var(--purple-l);}
+
+/* ── CARDS ── */
+.card{
+  background:white;border-radius:var(--r);
+  box-shadow:var(--shadow);transition:all .2s;cursor:pointer;
+}
+.card:hover,.card:active{transform:scale(1.06);box-shadow:var(--shadow-lg);}
+.card.correct{background:#d4f8e8;border:3px solid var(--teal);}
+.card.wrong{background:var(--red-l);border:3px solid var(--red);animation:shake .4s;}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{width:100%;max-width:400px;height:14px;background:var(--purple-l);border-radius:10px;overflow:hidden;}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:10px;transition:width .5s ease;}
+
+/* ── CELEBRATE OVERLAY ── */
+#celebrate{display:none;position:fixed;inset:0;pointer-events:none;z-index:999;}
+#celebrate.active{display:block;}
+.star-burst{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Fredoka One',cursive;font-size:clamp(2rem,6vw,3.5rem);
+  color:var(--purple);text-align:center;pointer-events:none;
+  animation:starPop 2s ease-out forwards;z-index:1000;
+}
+.confetti-piece{position:absolute;border-radius:3px;animation:fall linear forwards;}
+
+/* ── LANG SCREEN ── */
+#lang-screen{background:linear-gradient(145deg,#FFD6E0,#E5D4FF,#DBEAFE);}
+.lang-cloud{position:absolute;background:white;border-radius:50px;opacity:.45;animation:floatCloud 8s ease-in-out infinite;}
+.lang-cloud::before,.lang-cloud::after{content:'';position:absolute;background:white;border-radius:50%;}
+.lang-btn{
+  background:white;border:none;border-radius:20px;padding:1em 1.8em;
+  cursor:pointer;box-shadow:var(--shadow-lg);transition:all .2s;
+  display:flex;flex-direction:column;align-items:center;gap:.3em;min-width:130px;
+}
+.lang-btn:hover{transform:translateY(-5px) scale(1.05);}
+.lang-flag{font-size:2.8rem;}
+.lang-name{font-family:'Fredoka One',cursive;font-size:1.3rem;color:#6B2D8B;}
+
+/* ── DOLLHOUSE MAIN SCREEN ── */
+#bedroom-screen { background: #E8D5FF; }
+#bedroom-screen.active { display:flex; }
+
+/* Sky background with clouds */
+.dh-sky {
+  flex-shrink:0; position:relative; overflow:hidden;
+  background:linear-gradient(180deg,#C9E8FF 0%,#E8D5FF 100%);
+  padding:.6em 1em .4em;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.dh-title-wrap { text-align:center; flex:1; }
+.dh-logo {
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(1.4rem,4vw,2.4rem);
+  color:#7B2D8B;
+  text-shadow:3px 3px 0 rgba(255,255,255,.7), 0 0 20px rgba(255,143,171,.5);
+  line-height:1; letter-spacing:1px;
+}
+.dh-logo span { color:#FF8FAB; }
+.dh-cloud-dec { font-size:clamp(1.5rem,4vw,2.5rem); filter:drop-shadow(2px 3px 6px rgba(0,0,0,.1)); }
+.dh-rainbow {
+  font-size:clamp(1.8rem,5vw,3rem);
+  filter:drop-shadow(2px 3px 6px rgba(0,0,0,.1));
+  animation:bounce 3s ease-in-out infinite;
+}
+
+/* The house structure */
+.dh-house {
+  flex:1; overflow-y:auto; overflow-x:hidden;
+  padding:.5em .6em .8em;
+  display:flex; flex-direction:column; gap:.5em;
+}
+.dh-house::-webkit-scrollbar { width:6px; }
+.dh-house::-webkit-scrollbar-thumb { background:rgba(181,123,255,.4); border-radius:4px; }
+
+/* House outer shell */
+.dh-shell {
+  background:linear-gradient(180deg,#FFB3D9 0%,#FF8FAB 8%,#FFC8E8 8%);
+  border-radius:20px 20px 16px 16px;
+  border:4px solid #D4607A;
+  overflow:hidden;
+  box-shadow:0 8px 32px rgba(181,123,255,.35), inset 0 -4px 0 rgba(0,0,0,.1);
+  position:relative;
+}
+/* Roof decoration */
+.dh-roof {
+  background:linear-gradient(135deg,#FF8FAB,#D4607A);
+  padding:.4em 1.5em .3em;
+  display:flex; align-items:center; justify-content:center; gap:.5em;
+  border-bottom:4px solid #D4607A;
+}
+.dh-roof-title {
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(1rem,3vw,1.5rem);
+  color:white; text-shadow:2px 2px 0 rgba(0,0,0,.15);
+  letter-spacing:1px;
+}
+.dh-cat-ear {
+  width:clamp(24px,4vw,36px); height:clamp(24px,4vw,36px);
+  background:#FFD6E0; border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+  border:3px solid #D4607A; display:flex; align-items:center; justify-content:center;
+  font-size:clamp(.7rem,2vw,1rem);
+}
+
+/* Floors grid */
+.dh-floors {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:4px; padding:4px;
+  background:#C4956A;
+}
+
+/* Individual room */
+.dh-room {
+  position:relative; cursor:pointer;
+  border-radius:12px; overflow:hidden;
+  border:3px solid rgba(255,255,255,.5);
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.1), 0 2px 8px rgba(0,0,0,.12);
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s;
+  min-height:clamp(110px,18vw,180px);
+  display:flex; flex-direction:column;
+}
+.dh-room:hover, .dh-room:active {
+  transform:scale(1.04) translateY(-3px);
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
+  border-color:rgba(255,255,255,.9);
+  z-index:10;
+}
+/* Room backgrounds — each room has its own vibe */
+.room-language { background:linear-gradient(145deg,#FFE4F0,#FFD6E0); }
+.room-numbers  { background:linear-gradient(145deg,#FFF3E0,#FFE0B2); }
+.room-colors   { background:linear-gradient(145deg,#F3E5F5,#E1BEE7); }
+.room-stories  { background:linear-gradient(145deg,#E8F5E9,#C8E6C9); }
+.room-games    { background:linear-gradient(145deg,#E3F2FD,#BBDEFB); }
+.room-creative { background:linear-gradient(145deg,#FFF8E1,#FFECB3); }
+
+/* Room label header */
+.dh-room-header {
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(4px);
+  padding:.3em .5em .2em;
+  border-bottom:2px solid rgba(255,255,255,.6);
+  flex-shrink:0;
+}
+.dh-room-name {
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(.65rem,1.8vw,1rem);
+  color:#6B2D8B; display:block; line-height:1.1;
+}
+.dh-room-sub {
+  font-size:clamp(.5rem,1.3vw,.75rem);
+  color:#AA77CC; font-weight:700;
+}
+
+/* Room interior */
+.dh-room-body {
+  flex:1; padding:.4em .3em .3em;
+  display:flex; flex-direction:column; align-items:center; justify-content:space-between;
+  gap:.25em;
+}
+.dh-room-icon { font-size:clamp(1.6rem,4vw,3rem); line-height:1; }
+.dh-room-scene {
+  font-size:clamp(.9rem,2.2vw,1.4rem); line-height:1.3; text-align:center;
+}
+
+/* Activity pills inside room */
+.dh-pills {
+  display:flex; flex-wrap:wrap; gap:2px; justify-content:center;
+}
+.dh-pill {
+  background:rgba(255,255,255,.8);
+  border-radius:20px; padding:2px 6px;
+  font-family:'Fredoka One',cursive;
+  font-size:clamp(.42rem,1.1vw,.65rem);
+  color:#7B2D8B; white-space:nowrap;
+  border:1.5px solid rgba(181,123,255,.3);
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+}
+
+/* Floor dividers */
+.dh-floor-label {
+  background:rgba(196,149,106,.9);
+  font-family:'Fredoka One',cursive;
+  font-size:.7rem; color:white;
+  padding:2px 8px; text-align:center;
+  letter-spacing:1px;
+}
+
+/* Bottom nav bar */
+.dh-nav {
+  flex-shrink:0;
+  background:linear-gradient(90deg,#FF8FAB,#B57BFF);
+  padding:.5em .8em;
+  display:flex; align-items:center; justify-content:space-between;
+  box-shadow:0 -3px 12px rgba(0,0,0,.15);
+}
+.dh-nav-btn {
+  background:rgba(255,255,255,.25); border:2px solid rgba(255,255,255,.5);
+  border-radius:20px; padding:.35em .8em;
+  font-family:'Fredoka One',cursive; font-size:clamp(.7rem,2vw,.95rem);
+  color:white; cursor:pointer; transition:all .2s;
+  display:flex; align-items:center; gap:.3em;
+}
+.dh-nav-btn:hover { background:rgba(255,255,255,.45); transform:scale(1.05); }
+.dh-nav-center {
+  display:flex; gap:.6em; align-items:center;
+}
+.dh-nav-icon {
+  background:rgba(255,255,255,.2); border-radius:50%;
+  width:clamp(32px,5vw,42px); height:clamp(32px,5vw,42px);
+  display:flex; align-items:center; justify-content:center;
+  font-size:clamp(1rem,2.5vw,1.4rem); cursor:pointer;
+  border:2px solid rgba(255,255,255,.4); transition:all .2s;
+}
+.dh-nav-icon:hover { background:rgba(255,255,255,.45); transform:scale(1.1); }
+.dh-nav-icon.active { background:rgba(255,255,255,.7); }
+
+/* Floating sparkles */
+.dh-sparkle {
+  position:absolute; pointer-events:none;
+  font-size:clamp(.8rem,1.5vw,1.2rem);
+  opacity:.5; animation:twinkle 2s ease-in-out infinite;
+}
+
+/* ── RESPONSIVE ── */
+/* Tablet portrait — 2 column rooms */
+@media(max-width:700px) {
+  .dh-floors { grid-template-columns:1fr 1fr; }
+  .dh-room { min-height:clamp(100px,22vw,160px); }
+}
+/* Phone — single column */
+@media(max-width:420px) {
+  .dh-floors { grid-template-columns:1fr; }
+  .dh-room { min-height:80px; flex-direction:row; align-items:center; }
+  .dh-room-body { flex-direction:row; justify-content:flex-start; padding:.5em; gap:.6em; }
+  .dh-room-icon { font-size:2rem; }
+  .dh-room-scene { display:none; }
+  .dh-pills { flex-direction:row; }
+}
+
+/* bg stars */
+.bg-stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.bg-star{position:absolute;font-size:1rem;opacity:.07;animation:floatStar linear infinite;}
+
+
+/* ── LETTER / NUMBER / SHAPE GRIDS ── */
+.item-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(60px,10vw,90px),1fr));gap:.7em;width:100%;max-width:780px;}
+.grid-card{border-radius:var(--r);padding:.7em .4em;text-align:center;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;background:white;}
+.grid-card:hover,.grid-card:active{transform:scale(1.1);}
+.grid-big{font-family:'Fredoka One',cursive;font-size:clamp(1.5rem,4vw,2.2rem);display:block;}
+.grid-emoji{font-size:clamp(1rem,2.5vw,1.4rem);display:block;margin-top:2px;}
+.grid-word{font-size:clamp(.5rem,1.5vw,.75rem);color:#888;font-weight:700;}
+
+/* ── DRAG & DROP ── */
+.drag-panel{background:white;border-radius:var(--r-lg);padding:1em;max-width:780px;width:100%;box-shadow:var(--shadow);border:3px solid var(--blue-l);}
+.drag-title{font-family:'Fredoka One',cursive;font-size:1.1rem;color:#555;margin-bottom:.8em;text-align:center;}
+.drag-items{display:flex;gap:.6em;flex-wrap:wrap;justify-content:center;margin-bottom:1em;}
+.drag-item{background:var(--purple-p);border:3px solid var(--purple-l);border-radius:12px;padding:.6em 1em;
+  cursor:grab;font-family:'Fredoka One',cursive;font-size:1.1rem;transition:all .2s;touch-action:none;}
+.drag-item:hover{transform:scale(1.08);border-color:var(--purple);}
+.drag-item.dragging{opacity:.35;}
+.drop-zones{display:flex;gap:.7em;flex-wrap:wrap;justify-content:center;}
+.drop-zone{border:3px dashed #CCC;border-radius:var(--r);padding:.9em 1.2em;min-width:100px;min-height:60px;
+  text-align:center;font-family:'Fredoka One',cursive;font-size:.9rem;color:#BBB;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.drop-zone.over{border-color:var(--teal);background:var(--teal-l);transform:scale(1.05);}
+.drop-zone.correct{background:#d4f8e8;border-color:var(--teal);border-style:solid;color:#1A6B4A;}
+.drop-zone.wrong{background:var(--red-l);border-color:var(--red);border-style:solid;animation:shake .4s;}
+
+/* ── MEMORY GAME ── */
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7em;width:100%;max-width:640px;}
+.mem-card{
+  aspect-ratio:1;border-radius:var(--r);cursor:pointer;position:relative;
+  transform-style:preserve-3d;transition:transform .4s;
+}
+.mem-card.flipped,.mem-card.matched{transform:rotateY(180deg);}
+.mem-card-face,.mem-card-back{
+  position:absolute;inset:0;border-radius:var(--r);
+  backface-visibility:hidden;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(1.5rem,5vw,2.5rem);box-shadow:var(--shadow);
+}
+.mem-card-back{background:linear-gradient(135deg,var(--purple),var(--pink));font-size:1.5rem;}
+.mem-card-face{background:white;border:3px solid var(--purple-l);transform:rotateY(180deg);}
+.mem-card.matched .mem-card-face{background:#d4f8e8;border-color:var(--teal);}
+
+/* ── MATH ── */
+.math-panel{background:white;border-radius:var(--r-lg);padding:1.2em;max-width:600px;width:100%;box-shadow:var(--shadow);border:3px solid var(--yellow-l);}
+.math-visual{font-size:clamp(1.8rem,6vw,3rem);text-align:center;letter-spacing:4px;margin:.5em 0;line-height:1.5;}
+.math-question{font-family:'Fredoka One',cursive;font-size:clamp(1.2rem,4vw,1.8rem);color:#555;text-align:center;margin-bottom:.8em;}
+.math-choices{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7em;}
+.math-choice{
+  background:white;border:4px solid var(--yellow-l);border-radius:var(--r);
+  padding:.8em .4em;text-align:center;cursor:pointer;
+  font-family:'Fredoka One',cursive;font-size:clamp(1.4rem,4vw,2rem);color:#555;
+  transition:all .2s;box-shadow:var(--shadow);
+}
+.math-choice:hover{transform:scale(1.08);border-color:var(--yellow);}
+.math-choice.correct{background:#d4f8e8;border-color:var(--teal);color:#1A6B4A;}
+.math-choice.wrong{background:var(--red-l);border-color:var(--red);animation:shake .4s;}
+
+/* ── SPELLING ── */
+.spell-panel{background:white;border-radius:var(--r-lg);padding:1.2em;max-width:600px;width:100%;box-shadow:var(--shadow);border:3px solid var(--blue-l);}
+.spell-emoji{font-size:clamp(4rem,12vw,7rem);text-align:center;display:block;animation:bounce .5s;}
+.spell-hint{font-size:1rem;color:#888;text-align:center;font-weight:700;margin-bottom:.8em;}
+.spell-slots{display:flex;gap:.5em;justify-content:center;flex-wrap:wrap;margin-bottom:1em;}
+.spell-slot{
+  width:clamp(44px,8vw,64px);height:clamp(44px,8vw,64px);
+  border:4px solid var(--blue-l);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fredoka One',cursive;font-size:clamp(1.3rem,4vw,2rem);
+  color:var(--blue);background:var(--blue-l);
+  transition:all .2s;
+}
+.spell-slot.filled{background:white;border-color:var(--purple);color:var(--purple);}
+.spell-slot.correct-all{background:#d4f8e8;border-color:var(--teal);color:var(--teal);}
+.spell-keyboard{display:flex;flex-wrap:wrap;gap:.4em;justify-content:center;max-width:480px;}
+.spell-key{
+  background:white;border:3px solid var(--purple-l);border-radius:10px;
+  padding:.5em .7em;font-family:'Fredoka One',cursive;font-size:1.1rem;
+  color:#7B2D8B;cursor:pointer;transition:all .15s;box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+.spell-key:hover,.spell-key:active{background:var(--purple-p);transform:scale(1.1);}
+.spell-key.used{opacity:.3;pointer-events:none;}
+.spell-del{background:var(--red-l);border-color:var(--red);color:var(--red);}
+
+/* ── SIMON SAYS ── */
+.simon-panel{display:flex;flex-direction:column;align-items:center;gap:1em;width:100%;max-width:480px;}
+.simon-grid{display:grid;grid-template-columns:1fr 1fr;gap:1em;width:100%;}
+.simon-btn{
+  aspect-ratio:1;border-radius:var(--r-lg);cursor:pointer;
+  border:none;font-size:clamp(2.5rem,8vw,4rem);
+  transition:all .15s;box-shadow:var(--shadow-lg);
+  display:flex;align-items:center;justify-content:center;
+}
+.simon-btn:hover{transform:scale(1.05);}
+.simon-btn.lit{transform:scale(1.08);filter:brightness(1.4);box-shadow:0 0 30px rgba(255,255,255,.6);}
+.simon-info{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#7B2D8B;text-align:center;}
+.simon-score{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--purple);}
+
+/* ── RHYTHM ── */
+.rhythm-panel{display:flex;flex-direction:column;align-items:center;gap:1em;width:100%;max-width:600px;}
+.rhythm-display{display:flex;gap:.7em;justify-content:center;flex-wrap:wrap;margin:.5em 0;}
+.rhythm-beat{
+  width:clamp(50px,10vw,80px);height:clamp(50px,10vw,80px);
+  border-radius:50%;border:4px solid transparent;
+  font-size:clamp(1.5rem,4vw,2.5rem);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;box-shadow:var(--shadow);background:white;
+}
+.rhythm-beat.active{transform:scale(1.2);filter:brightness(1.3);}
+.rhythm-beat.hit{background:#d4f8e8;border-color:var(--teal);}
+.rhythm-beat.miss{background:var(--red-l);border-color:var(--red);}
+.rhythm-tap-btn{
+  width:clamp(100px,20vw,160px);height:clamp(100px,20vw,160px);
+  border-radius:50%;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--pink),var(--purple));
+  font-size:clamp(2rem,6vw,3.5rem);box-shadow:0 8px 24px rgba(181,123,255,.5);
+  transition:all .1s;display:flex;align-items:center;justify-content:center;
+}
+.rhythm-tap-btn:active{transform:scale(.92);box-shadow:0 4px 12px rgba(181,123,255,.4);}
+
+/* ── PUZZLE ── */
+.puzzle-panel{display:flex;flex-direction:column;align-items:center;gap:1em;width:100%;max-width:560px;}
+.puzzle-grid{display:grid;gap:6px;background:var(--purple-l);padding:8px;border-radius:var(--r);box-shadow:var(--shadow-lg);}
+.puzzle-piece{
+  border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(2rem,7vw,4rem);background:white;border:3px solid transparent;
+  transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.1);aspect-ratio:1;
+}
+.puzzle-piece:hover{transform:scale(1.05);border-color:var(--purple);}
+.puzzle-piece.selected{border-color:var(--purple);background:var(--purple-p);transform:scale(1.08);}
+.puzzle-piece.correct{background:#d4f8e8;border-color:var(--teal);}
+.puzzle-piece.empty{background:var(--purple-p);cursor:default;border:3px dashed var(--purple-l);}
+.puzzle-tray{display:flex;gap:.7em;flex-wrap:wrap;justify-content:center;padding:.8em;background:var(--cream);border-radius:var(--r);width:100%;}
+
+/* ── STORYBOOK ── */
+.story-controls{display:flex;gap:.8em;flex-wrap:wrap;justify-content:center;width:100%;max-width:780px;}
+.story-btn{background:linear-gradient(135deg,var(--pink),var(--purple));border:none;border-radius:var(--r);padding:.7em 1.4em;font-family:'Fredoka One',cursive;font-size:clamp(.9rem,2.5vw,1.1rem);color:white;cursor:pointer;box-shadow:var(--shadow);transition:all .2s;}
+.story-btn:hover,.story-btn:active{transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+.storybook-viewer{width:100%;max-width:780px;display:none;}
+.storybook-viewer.active{display:block;}
+.book-wrap{perspective:1400px;width:100%;padding-bottom:62%;position:relative;}
+.book-page{position:absolute;inset:0;background:white;border-radius:20px;box-shadow:var(--shadow-lg),4px 0 16px rgba(0,0,0,.08);overflow:hidden;display:flex;flex-direction:column;border:3px solid var(--pink-l);}
+.book-page.flip-out{animation:pageFlipOut .5s ease-in forwards;}
+.book-page.flip-in{animation:pageFlipIn .5s ease-out forwards;}
+.page-cover{background:linear-gradient(145deg,#FFD6E0,#E5D4FF,#DBEAFE);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5em;text-align:center;height:100%;}
+.cover-title{font-family:'Fredoka One',cursive;font-size:clamp(1.4rem,4vw,2.4rem);color:#6B2D8B;margin-bottom:.3em;text-shadow:2px 2px 0 rgba(255,255,255,.6);line-height:1.2;}
+.cover-star{font-size:clamp(3rem,8vw,5rem);display:block;animation:bounce 2s ease-in-out infinite;}
+.page-illustration{flex:0 0 58%;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.illus-emoji-scene{font-size:clamp(2.5rem,7vw,4.5rem);line-height:1.4;text-align:center;padding:.5em;}
+.page-text-area{flex:1;padding:.9em 1.2em .7em;display:flex;flex-direction:column;justify-content:space-between;background:white;}
+.page-text{font-family:'Nunito',sans-serif;font-size:clamp(.95rem,2.5vw,1.15rem);color:#444;line-height:1.65;flex:1;}
+.page-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.5em;}
+.page-num{font-family:'Fredoka One',cursive;font-size:.85rem;color:#CCC;}
+.page-read-btn{background:none;border:none;cursor:pointer;font-size:1.4rem;transition:transform .2s;padding:.2em;}
+.page-read-btn:hover{transform:scale(1.2);}
+.book-nav{display:flex;align-items:center;justify-content:space-between;padding:.7em 0;gap:.5em;}
+.nav-btn{background:white;border:3px solid var(--purple-l);border-radius:50%;width:50px;height:50px;font-size:1.4rem;cursor:pointer;box-shadow:var(--shadow);transition:all .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nav-btn:hover,.nav-btn:active{background:var(--purple-p);transform:scale(1.1);border-color:var(--purple);}
+.nav-btn:disabled{opacity:.3;cursor:default;transform:none;}
+.page-dots{display:flex;gap:6px;align-items:center;flex:1;justify-content:center;}
+.page-dot{width:10px;height:10px;border-radius:50%;background:var(--purple-l);transition:all .2s;}
+.page-dot.active{background:var(--purple);transform:scale(1.3);}
+
+/* ── LISTEN ── */
+.listen-card{background:white;border-radius:var(--r-lg);padding:1.5em;text-align:center;box-shadow:var(--shadow);border:3px solid var(--yellow-l);width:100%;max-width:500px;}
+.listen-emoji-big{font-size:clamp(4rem,12vw,7rem);display:block;animation:popIn .4s ease-out;margin-bottom:.3em;}
+.listen-word{font-family:'Fredoka One',cursive;font-size:clamp(1.8rem,6vw,3rem);color:var(--purple);display:block;margin-bottom:.2em;}
+.listen-trans{font-size:clamp(.9rem,2.5vw,1.1rem);color:#888;font-weight:700;}
+.listen-btns{display:flex;gap:.8em;justify-content:center;flex-wrap:wrap;margin-top:1em;}
+
+/* ── DRAWING STUDIO ── */
+.draw-studio{width:100%;max-width:900px;display:flex;flex-direction:column;gap:.6em;align-items:center;}
+.draw-toolbar{width:100%;background:white;border-radius:18px;padding:.6em .8em;box-shadow:var(--shadow);border:3px solid var(--pink-l);display:flex;align-items:center;gap:.5em;flex-wrap:wrap;}
+.tool-group{display:flex;gap:4px;background:var(--pink-p);border-radius:12px;padding:4px;}
+.tool-btn{border:none;border-radius:9px;padding:.4em .55em;cursor:pointer;font-size:1.15rem;line-height:1;background:transparent;transition:all .15s;position:relative;}
+.tool-btn:hover{background:rgba(255,255,255,.8);transform:scale(1.1);}
+.tool-btn.active{background:white;box-shadow:0 2px 8px rgba(0,0,0,.15);transform:scale(1.12);}
+.tool-tip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#333;color:white;font-size:.65rem;font-family:'Nunito',sans-serif;font-weight:700;white-space:nowrap;padding:2px 6px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .15s;}
+.tool-btn:hover .tool-tip{opacity:1;}
+.color-group{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
+.color-swatch-btn{width:26px;height:26px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all .15s;flex-shrink:0;}
+.color-swatch-btn:hover{transform:scale(1.2);}
+.color-swatch-btn.active{border-color:white;box-shadow:0 0 0 3px var(--purple),0 2px 8px rgba(0,0,0,.2);transform:scale(1.25);}
+.size-group{display:flex;align-items:center;gap:6px;}
+.size-slider{-webkit-appearance:none;appearance:none;width:80px;height:6px;border-radius:4px;background:var(--purple-l);outline:none;cursor:pointer;}
+.size-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--purple);box-shadow:0 2px 6px rgba(0,0,0,.2);cursor:pointer;}
+.size-preview{border-radius:50%;background:#333;flex-shrink:0;transition:all .15s;}
+.toolbar-sep{width:2px;height:30px;background:var(--pink-l);border-radius:2px;flex-shrink:0;}
+.draw-action-btn{border:none;border-radius:10px;padding:.4em .75em;font-family:'Fredoka One',cursive;font-size:.85rem;cursor:pointer;color:white;box-shadow:0 2px 8px rgba(0,0,0,.12);transition:all .2s;white-space:nowrap;}
+.draw-action-btn:hover{transform:translateY(-2px);}
+.bg-group{display:flex;gap:5px;align-items:center;}
+.bg-btn{width:22px;height:22px;border-radius:6px;border:3px solid transparent;cursor:pointer;transition:all .15s;}
+.bg-btn:hover{transform:scale(1.15);}
+.bg-btn.active{border-color:var(--purple);box-shadow:0 0 0 2px white,0 0 0 4px var(--purple);}
+.draw-canvas-wrap{width:100%;position:relative;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow-lg);border:4px solid var(--pink-l);background:white;}
+#draw-canvas{display:block;touch-action:none;width:100%;}
+
+/* ── ANIMATIONS ── */
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes wiggle{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+@keyframes twinkle{0%,100%{opacity:.1}50%{opacity:.3}}
+@keyframes teddySway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+@keyframes floatCloud{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes floatStar{0%{transform:translateY(100vh) rotate(0)}100%{transform:translateY(-10vh) rotate(360deg)}}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+@keyframes starPop{0%{transform:translate(-50%,-50%) scale(0);opacity:1}60%{transform:translate(-50%,-50%) scale(1.2);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
+@keyframes pageFlipOut{0%{transform:rotateY(0) scale(1);opacity:1}100%{transform:rotateY(-90deg) scale(.96);opacity:0}}
+@keyframes pageFlipIn{0%{transform:rotateY(90deg) scale(.96);opacity:0}100%{transform:rotateY(0) scale(1);opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── LOADING SCREEN ── */
+.loading-screen{position:fixed;inset:0;background:linear-gradient(145deg,#FFD6E0,#E5D4FF);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1em;z-index:9999;transition:opacity .5s;}
+.loading-screen.hidden{opacity:0;pointer-events:none;}
+.loading-title{font-family:'Fredoka One',cursive;font-size:clamp(1.8rem,5vw,3rem);color:#6B2D8B;text-shadow:3px 3px 0 rgba(255,255,255,.6);}
+.loading-sub{font-size:1rem;color:#9B5E9B;font-weight:700;}
+
+/* ── QUIZ PANEL ── */
+.quiz-panel{max-width:600px;width:100%;}
+.quiz-question{background:white;border-radius:var(--r-lg);padding:1.2em;text-align:center;margin-bottom:1em;box-shadow:var(--shadow);border:3px solid var(--purple-l);}
+.quiz-q-text{font-family:'Fredoka One',cursive;font-size:clamp(1.1rem,3.5vw,1.5rem);color:#555;}
+.quiz-emoji{font-size:clamp(2.5rem,8vw,4rem);display:block;margin-bottom:.3em;}
+.quiz-answers{display:grid;grid-template-columns:1fr 1fr;gap:.7em;}
+.quiz-ans{background:white;border:3px solid var(--blue-l);border-radius:var(--r);padding:.8em .5em;text-align:center;cursor:pointer;font-family:'Fredoka One',cursive;font-size:clamp(.9rem,2.5vw,1.1rem);color:#555;transition:all .2s;box-shadow:var(--shadow);}
+.quiz-ans:hover{transform:scale(1.05);border-color:var(--blue);}
+.quiz-ans.correct{background:#d4f8e8;border-color:var(--teal);color:#1A6B4A;}
+.quiz-ans.wrong{background:var(--red-l);border-color:var(--red);color:#D32F2F;animation:shake .4s;}
+
+/* Smooth screen transitions */
+.screen{transition:opacity .3s;opacity:0;}
+.screen.active{opacity:1;}
+</style>
+
+
+<!-- LOADING -->
+<div id="loading-screen" style="position:fixed;inset:0;background:linear-gradient(145deg,#FFD6E0,#E5D4FF);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1em;z-index:9999;transition:opacity .5s">
+  <span style="font-size:5rem;animation:bounce 1s infinite">🏠</span>
+  <div style="font-family:'Fredoka One',cursive;font-size:clamp(1.8rem,5vw,3rem);color:#6B2D8B;text-shadow:3px 3px 0 rgba(255,255,255,.6)">Anna's Learning House!</div>
+  <div style="font-size:1rem;color:#9B5E9B;font-weight:700" id="loading-sub">Getting everything ready... ✨</div>
+  <div class="progress-wrap" style="margin-top:.5em"><div class="progress-bar" id="loading-bar" style="width:0%"></div></div>
+</div>
+
+<!-- CELEBRATE -->
+<div id="celebrate"><div class="star-burst" id="star-burst"></div></div>
+
+<!-- BG STARS -->
+<div class="bg-stars" id="bg-stars"></div>
+
+<!-- ══════════════════ LANGUAGE SCREEN ══════════════════ -->
+<div class="screen screen-center active" id="lang-screen">
+  <div style="position:absolute;width:100%;height:100%;overflow:hidden;pointer-events:none">
+    <div class="lang-cloud" style="width:130px;height:44px;top:10%;left:5%"></div>
+    <div class="lang-cloud" style="width:90px;height:30px;top:14%;right:8%;animation-delay:2s"></div>
+    <div class="lang-cloud" style="width:110px;height:38px;top:6%;left:40%;animation-delay:4s"></div>
+  </div>
+  <div style="position:relative;z-index:2;text-align:center;padding:2em">
+    <span style="font-size:clamp(4rem,12vw,7rem);display:block;animation:bounce 2s ease-in-out infinite;margin-bottom:.1em">🏠</span>
+    <div style="font-family:'Fredoka One',cursive;font-size:clamp(2.2rem,7vw,4rem);color:#7B2D8B;text-shadow:3px 3px 0 rgba(255,255,255,.7);margin-bottom:.15em;line-height:1.1">Anna's<br>Learning House!</div>
+    <div style="font-size:clamp(1rem,3vw,1.3rem);color:#9B5E9B;margin-bottom:1.8em;font-weight:700">Choose your language • Choisir • Escolher</div>
+    <div style="display:flex;gap:1em;flex-wrap:wrap;justify-content:center">
+      <button class="lang-btn" onclick="App.setLang('en')"><span class="lang-flag">🇬🇧</span><span class="lang-name">English</span></button>
+      <button class="lang-btn" onclick="App.setLang('fr')"><span class="lang-flag">🇫🇷</span><span class="lang-name">Français</span></button>
+      <button class="lang-btn" onclick="App.setLang('pt')"><span class="lang-flag">🇧🇷</span><span class="lang-name">Português</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ BEDROOM / DOLLHOUSE SCREEN ══════════════════ -->
+<div class="screen" id="bedroom-screen">
+
+  <!-- Sky header -->
+  <div class="dh-sky">
+    <div class="dh-cloud-dec">☁️🌈</div>
+    <div class="dh-title-wrap">
+      <div class="dh-logo">⭐ <span>ANNA'S</span> LEARNING HOUSE ⭐</div>
+    </div>
+    <div style="display:flex;gap:.4em;align-items:center">
+      <div class="dh-rainbow">🏠</div>
+      <button class="back-btn" onclick="App.showScreen('lang-screen')" id="lang-flag-btn" style="font-size:.9rem;padding:.3em .6em">🇬🇧</button>
+    </div>
+  </div>
+
+  <!-- House -->
+  <div class="dh-house" id="dh-house">
+    <div class="dh-shell">
+
+      <!-- Roof / title bar -->
+      <div class="dh-roof">
+        <div class="dh-cat-ear">🐱</div>
+        <div class="dh-roof-title">✨ Anna's Learning House ✨</div>
+        <div class="dh-cat-ear">🐱</div>
+      </div>
+
+      <!-- Floor 1: Language & Stories -->
+      <div class="dh-floor-label">🌟 Floor 1</div>
+      <div class="dh-floors">
+
+        <!-- Room 1: ABC Adventures -->
+        <div class="dh-room room-language" onclick="App.openActivity('letters')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">📚 ABC Adventures</span>
+            <span class="dh-room-sub">Language & Phonics</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🔤✨📖</div>
+            <div class="dh-pills">
+              <span class="dh-pill">Letter Fun</span>
+              <span class="dh-pill">Phonics</span>
+            </div>
+          </div>
+          <div class="dh-sparkle" style="top:30%;right:8%;animation-delay:.5s">⭐</div>
+        </div>
+
+        <!-- Room 2: Story Time -->
+        <div class="dh-room room-stories" onclick="App.openActivity('stories')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">📖 Story Corner</span>
+            <span class="dh-room-sub">AI Stories daily</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🌈🐱🌙</div>
+            <div class="dh-pills">
+              <span class="dh-pill">Story Time</span>
+              <span class="dh-pill">AI Tales</span>
+            </div>
+          </div>
+          <div class="dh-sparkle" style="top:25%;left:8%;animation-delay:1s">💫</div>
+        </div>
+
+        <!-- Room 3: French -->
+        <div class="dh-room room-colors" onclick="App.openActivity('french')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">🇫🇷 French Room</span>
+            <span class="dh-room-sub">Bonjour!</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🥐☁️🌸</div>
+            <div class="dh-pills">
+              <span class="dh-pill">Words</span>
+              <span class="dh-pill">Quiz</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Floor 2: Numbers & Logic -->
+      <div class="dh-floor-label">🔢 Floor 2</div>
+      <div class="dh-floors">
+
+        <!-- Room 4: Numbers -->
+        <div class="dh-room room-numbers" onclick="App.openActivity('numbers')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">🔢 Numbers Lab</span>
+            <span class="dh-room-sub">Count & Learn</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">1️⃣2️⃣3️⃣</div>
+            <div class="dh-pills">
+              <span class="dh-pill">Counting</span>
+              <span class="dh-pill">1 to 10</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room 5: Math -->
+        <div class="dh-room room-numbers" onclick="App.openActivity('math')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">➕ Math Studio</span>
+            <span class="dh-room-sub">AI problems daily</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🍎➕🍎</div>
+            <div class="dh-pills">
+              <span class="dh-pill">Counting</span>
+              <span class="dh-pill">Addition</span>
+            </div>
+          </div>
+          <div class="dh-sparkle" style="bottom:30%;right:8%;animation-delay:.8s">✨</div>
+        </div>
+
+        <!-- Room 6: Simon -->
+        <div class="dh-room room-games" onclick="App.openActivity('simon')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">🎯 Simon Says</span>
+            <span class="dh-room-sub">Pattern Memory</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🟢🔴🔵🟡</div>
+            <div class="dh-pills">
+              <span class="dh-pill">Patterns</span>
+              <span class="dh-pill">Memory</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Floor 3: Discovery & Games -->
+      <div class="dh-floor-label">🎮 Floor 3</div>
+      <div class="dh-floors">
+
+        <!-- Room 7: Colors & Shapes -->
+        <div class="dh-room room-colors" onclick="App.openActivity('shapes')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">🎨 Colors World</span>
+            <span class="dh-room-sub">Shapes & Colors</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🔴🔵🟡⭐</div>
+            <div class="dh-pills">
+              <span class="dh-pill">8 Colors</span>
+              <span class="dh-pill">8 Shapes</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room 8: Memory -->
+        <div class="dh-room room-games" onclick="App.openActivity('memory')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">🃏 Memory Match</span>
+            <span class="dh-room-sub">AI cards daily</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🃏🐱❓</div>
+            <div class="dh-pills">
+              <span class="dh-pill">Find Pairs</span>
+              <span class="dh-pill">16 Cards</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room 9: Sort Game -->
+        <div class="dh-room room-games" onclick="App.openActivity('drag')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">🎮 Sort & Match</span>
+            <span class="dh-room-sub">AI game daily</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🐟💧🦅☁️</div>
+            <div class="dh-pills">
+              <span class="dh-pill">Drag & Drop</span>
+              <span class="dh-pill">Sorting</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Floor 4: Creative & Music -->
+      <div class="dh-floor-label">🎵 Floor 4</div>
+      <div class="dh-floors">
+
+        <!-- Room 10: Drawing -->
+        <div class="dh-room room-creative" onclick="App.openActivity('drawing')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">🎨 Art Studio</span>
+            <span class="dh-room-sub">Draw & Paint</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🖌️✏️🖍️</div>
+            <div class="dh-pills">
+              <span class="dh-pill">6 Tools</span>
+              <span class="dh-pill">15 Colors</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room 11: Rhythm -->
+        <div class="dh-room room-creative" onclick="App.openActivity('rhythm')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">🥁 Music Room</span>
+            <span class="dh-room-sub">Rhythm & Beat</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🎵🥁🎶</div>
+            <div class="dh-pills">
+              <span class="dh-pill">Tap Beat</span>
+              <span class="dh-pill">7 Levels</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room 12: Listen & Repeat -->
+        <div class="dh-room room-language" onclick="App.openActivity('listen')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">🎵 Listen Room</span>
+            <span class="dh-room-sub">AI vocab daily</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🔊👂⭐</div>
+            <div class="dh-pills">
+              <span class="dh-pill">Listen</span>
+              <span class="dh-pill">Repeat</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Floor 5: Challenges -->
+      <div class="dh-floor-label">🏆 Floor 5</div>
+      <div class="dh-floors">
+
+        <!-- Room 13: Spelling -->
+        <div class="dh-room room-language" onclick="App.openActivity('spelling')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">🔤 Spell Zone</span>
+            <span class="dh-room-sub">AI words daily</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🐱C-A-T</div>
+            <div class="dh-pills">
+              <span class="dh-pill">Spelling</span>
+              <span class="dh-pill">6 Words</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room 14: Puzzle -->
+        <div class="dh-room room-games" onclick="App.openActivity('puzzle')">
+          <div class="dh-room-header">
+            <span class="dh-room-name">🧩 Puzzle Room</span>
+            <span class="dh-room-sub">4 Scenes</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🧩🌈🦁</div>
+            <div class="dh-pills">
+              <span class="dh-pill">Emoji Puzzle</span>
+              <span class="dh-pill">Swap & Win</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bonus: all activities -->
+        <div class="dh-room room-creative" style="cursor:default;opacity:.7">
+          <div class="dh-room-header">
+            <span class="dh-room-name">🌟 More coming!</span>
+            <span class="dh-room-sub">Stay tuned</span>
+          </div>
+          <div class="dh-room-body">
+            <div class="dh-room-scene">🚀💫🌸</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div><!-- end dh-shell -->
+  </div><!-- end dh-house -->
+
+  <!-- Bottom nav bar -->
+  <div class="dh-nav">
+    <button class="dh-nav-btn" onclick="App.showScreen('lang-screen')">🌐 <span id="room-title">Home</span></button>
+    <div class="dh-nav-center">
+      <div class="dh-nav-icon active" title="Letters" onclick="App.openActivity('letters')">📚</div>
+      <div class="dh-nav-icon" title="Math" onclick="App.openActivity('math')">➕</div>
+      <div class="dh-nav-icon" title="Stories" onclick="App.openActivity('stories')">📖</div>
+      <div class="dh-nav-icon" title="Draw" onclick="App.openActivity('drawing')">🎨</div>
+      <div class="dh-nav-icon" title="Memory" onclick="App.openActivity('memory')">🃏</div>
+    </div>
+    <button class="dh-nav-btn" style="background:rgba(255,215,0,.3);border-color:rgba(255,215,0,.6)">🐾 Paws-itively Fun!</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════ ACTIVITY SCREEN ══════════════════ -->
+<div class="screen" id="activity-screen">
+  <div class="app-header">
+    <button class="back-btn" onclick="App.goBack()">← <span id="back-label">Back</span></button>
+    <h1 id="activity-title">Activity</h1>
+    <button class="back-btn" onclick="TTS.stop()" title="Stop voice">🔇</button>
+  </div>
+  <div class="activity-body" id="activity-body"></div>
+</div>
+
+<!-- SCRIPTS — load order matters -->
+<script>
+// tts.js — ElevenLabs TTS, calls API directly from browser
+window.TTS = (() => {
+  const EL_KEY     = 'sk_795b5bfc3d9a4379bb25d58338edb2f910ec256e77528dc2';
+  const EL_VOICE   = 'hA4zGnmTwX2NQiTRMt7o';
+  const EL_MODEL   = 'eleven_turbo_v2_5';
+
+  let currentAudio = null;
+  let queue        = Promise.resolve();
+
+  // Strip emojis and symbols that confuse TTS
+  function clean(text) {
+    return text
+      .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')
+      .replace(/[\u{2600}-\u{27BF}]/gu,   '')
+      .replace(/[\u{FE00}-\u{FEFF}]/gu,   '')
+      .replace(/[^\w\s.,!?'\-àâäéèêëîïôùûüçãõáéíóúÀÂÄÉÈÊËÎÏÔÙÛÜÇÃÕÁÉÍÓÚ]/g, ' ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
+
+  function stop() {
+    if (currentAudio) { currentAudio.pause(); currentAudio.src = ''; currentAudio = null; }
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    queue = Promise.resolve();
+  }
+
+  function speak(text, lang = 'en') {
+    const t = clean(text);
+    if (!t) return;
+    stop();
+    queue = queue.then(() => _doSpeak(t, lang));
+  }
+
+  async function _doSpeak(text, lang) {
+    try {
+      const res = await fetch(
+        `https://api.elevenlabs.io/v1/text-to-speech/${EL_VOICE}/stream`, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': EL_KEY,
+          'Content-Type': 'application/json',
+          'Accept': 'audio/mpeg',
+        },
+        body: JSON.stringify({
+          text,
+          model_id: EL_MODEL,
+          voice_settings: { stability: 0.50, similarity_boost: 0.88, style: 0.30, use_speaker_boost: true }
+        })
+      });
+      if (!res.ok) throw new Error('EL ' + res.status);
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      await new Promise((resolve, reject) => {
+        const audio = new Audio(url);
+        currentAudio = audio;
+        audio.playbackRate = 0.93;
+        audio.onended = () => { URL.revokeObjectURL(url); currentAudio = null; resolve(); };
+        audio.onerror = () => { URL.revokeObjectURL(url); currentAudio = null; reject(); };
+        audio.play().catch(reject);
+      });
+    } catch (e) {
+      console.warn('ElevenLabs failed, using Web Speech:', e.message);
+      _webSpeech(text, lang);
+    }
+  }
+
+  function _webSpeech(text, lang) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang   = lang === 'fr' ? 'fr-FR' : lang === 'pt' ? 'pt-BR' : 'en-US';
+    u.rate   = 0.82; u.pitch = 1.2; u.volume = 1;
+    const voices = window.speechSynthesis.getVoices();
+    const pref = voices.find(v => v.lang.startsWith(u.lang.slice(0,2)) &&
+      (v.name.includes('Google') || v.name.includes('Samantha')))
+      || voices.find(v => v.lang.startsWith(u.lang.slice(0,2)));
+    if (pref) u.voice = pref;
+    window.speechSynthesis.speak(u);
+  }
+
+  return { speak, stop };
+})();
+
+// ai.js — OpenRouter AI, browser-direct, free models with fallback
+window.AI = (() => {
+  const OR_KEY = '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';
+
+  const FREE_MODELS = [
+    'deepseek/deepseek-r1-0528:free',
+    'deepseek/deepseek-r1:free',
+    'meta-llama/llama-4-maverick:free',
+    'meta-llama/llama-4-scout:free',
+    'google/gemma-3-27b-it:free',
+    'mistralai/mistral-7b-instruct:free',
+  ];
+
+  async function callAI(prompt, maxTokens = 600) {
+    let lastErr;
+    for (const model of FREE_MODELS) {
+      try {
+        const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OR_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://annaslearninghouse.github.io',
+            'X-Title': "Anna's Learning House",
+          },
+          body: JSON.stringify({ model, max_tokens: maxTokens, temperature: 0.8,
+            messages: [{ role: 'user', content: prompt }] })
+        });
+        if (!res.ok) { const t = await res.text(); throw new Error(res.status + ': ' + t); }
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+        const text = data.choices?.[0]?.message?.content || '';
+        if (!text) throw new Error('empty');
+        return text;
+      } catch(e) { console.warn('Model', model, 'failed:', e.message); lastErr = e; }
+    }
+    throw new Error('All models failed: ' + lastErr?.message);
+  }
+
+  function parseJSON(raw) {
+    const clean = raw.replace(/```json|```/gi,'').replace(/<think>[\s\S]*?<\/think>/gi,'').trim();
+    const start = clean.search(/[\[{]/);
+    if (start === -1) throw new Error('No JSON in response');
+    return JSON.parse(clean.slice(start));
+  }
+
+  function todayKey() { return new Date().toISOString().slice(0,10); }
+
+  function loadCache(key) {
+    try { return JSON.parse(localStorage.getItem(`ai_${key}_${todayKey()}`) || 'null'); } catch { return null; }
+  }
+  function saveCache(key, data) {
+    Object.keys(localStorage).filter(k => k.startsWith('ai_') && !k.includes(todayKey())).forEach(k => localStorage.removeItem(k));
+    localStorage.setItem(`ai_${key}_${todayKey()}`, JSON.stringify(data));
+  }
+
+  // ── Daily generators ──────────────────────────────────────
+
+  async function generateDailyStory(lang) {
+    const cached = loadCache('story_' + lang); if (cached) return cached;
+    const themes = ['a magical forest','a friendly dragon','a trip to the moon','an underwater kingdom',
+      'a bakery with talking bread','a rainbow farm','a night market with glowing lanterns',
+      'a garden where vegetables play','a tiny fairy village','a cloud city'];
+    const theme = themes[Math.floor(Math.random() * themes.length)];
+    const langName = lang==='fr'?'French':lang==='pt'?'Brazilian Portuguese':'English';
+    const prompt = `Write a 5-page children's storybook for a 3.5 year old named Anna. Theme: "${theme}". Language: ${langName}.
+Return ONLY valid JSON (no markdown):
+{"title":"...","pages":[{"text":"2-3 simple sentences with emojis","scene":"3-4 big emojis","bg":"#FFE4F0"}]}
+Exactly 5 pages, simple toddler words, warm magical tone, kind ending.`;
+    try { const d = parseJSON(await callAI(prompt, 900)); saveCache('story_' + lang, d); return d; }
+    catch(e) { console.warn('Story gen failed:', e.message); return null; }
+  }
+
+  async function generateMemoryCards() {
+    const cached = loadCache('memory'); if (cached) return cached;
+    const themes = ['farm animals','sea creatures','fruits','space','vehicles','jungle animals','flowers','dinosaurs'];
+    const theme = themes[Math.floor(Math.random() * themes.length)];
+    const prompt = `Generate 8 memory card pairs for a toddler. Theme: "${theme}".
+Return ONLY JSON array: [{"emoji":"🐮","label_en":"Cow","label_fr":"Vache","label_pt":"Vaca"}]
+Exactly 8 items, unique emojis.`;
+    try { const d = parseJSON(await callAI(prompt, 400)); saveCache('memory', d); return d; }
+    catch(e) { return null; }
+  }
+
+  async function generateSpellingWords() {
+    const cached = loadCache('spelling'); if (cached) return cached;
+    const themes = ['animals','food','colours','toys','family','nature'];
+    const theme = themes[Math.floor(Math.random() * themes.length)];
+    const prompt = `Generate 6 simple 3-5 letter spelling words for a 3.5 year old. Theme: "${theme}".
+Return ONLY JSON: [{"word":"CAT","emoji":"🐱","hint_en":"A fluffy pet","hint_fr":"Un animal doux","hint_pt":"Um animal fofo"}]
+Uppercase, 3-5 letters, simple.`;
+    try { const d = parseJSON(await callAI(prompt, 500)); saveCache('spelling', d); return d; }
+    catch(e) { return null; }
+  }
+
+  async function generateMathProblems() {
+    const cached = loadCache('math'); if (cached) return cached;
+    const prompt = `Generate 8 counting/addition problems for a 3.5 year old.
+Return ONLY JSON: [{"question_en":"How many 🍎?","question_fr":"Combien de 🍎 ?","question_pt":"Quantas 🍎?","visual":"🍎🍎🍎","answer":3,"choices":[2,3,4]}]
+Mix 4 counting and 4 simple addition (max 4+4). Use emojis in visual.`;
+    try { const d = parseJSON(await callAI(prompt, 600)); saveCache('math', d); return d; }
+    catch(e) { return null; }
+  }
+
+  async function generateDragGame() {
+    const cached = loadCache('drag'); if (cached) return cached;
+    const themes = ['sort animals into land/water/sky','sort food into fruits/vegetables',
+      'sort by colour red/blue/yellow','match baby animals to parents','sort clothes into summer/winter'];
+    const theme = themes[Math.floor(Math.random() * themes.length)];
+    const prompt = `Create a drag-and-drop sorting game for a toddler. Theme: "${theme}".
+Return ONLY JSON:
+{"title":{"en":"...","fr":"...","pt":"..."},
+"items":[{"label":{"en":"🐟 Fish","fr":"🐟 Poisson","pt":"🐟 Peixe"},"target":"water"}],
+"zones":[{"id":"water","label":{"en":"💧 Water","fr":"💧 Eau","pt":"💧 Água"},"color":"#DBEAFE"}]}
+6 items, 2-3 zones.`;
+    try { const d = parseJSON(await callAI(prompt, 500)); saveCache('drag', d); return d; }
+    catch(e) { return null; }
+  }
+
+  async function generateVocabWords() {
+    const cached = loadCache('vocab'); if (cached) return cached;
+    const topics = ['transport','body parts','emotions','kitchen','garden','sports','music','weather'];
+    const topic = topics[Math.floor(Math.random() * topics.length)];
+    const prompt = `Generate 10 vocabulary words for a toddler. Topic: "${topic}".
+Return ONLY JSON: [{"emoji":"🚗","word_en":"Car","word_fr":"Voiture","word_pt":"Carro"}]`;
+    try { const d = parseJSON(await callAI(prompt, 400)); saveCache('vocab', d); return d; }
+    catch(e) { return null; }
+  }
+
+  async function getTutorReaction(correct, activity, lang, answer) {
+    const langName = lang==='fr'?'French':lang==='pt'?'Portuguese':'English';
+    const mood = correct ? 'celebrating' : 'gently encouraging';
+    const prompt = `You are a friendly cartoon cat speaking to Anna, age 3.5.
+She answered a ${activity} question ${correct?'CORRECTLY':'INCORRECTLY'}. Her answer: "${answer}".
+Write ONE short (max 10 words), warm, ${mood} response in ${langName}.
+Use 1-2 emojis. Sound fun and kind. Return ONLY the sentence.`;
+    try {
+      const raw = await callAI(prompt, 60);
+      return raw.replace(/<think>[\s\S]*?<\/think>/gi,'').trim().replace(/^["']|["']$/g,'');
+    } catch {
+      if (correct) return lang==='fr'?'Bravo Anna ! 🌟':lang==='pt'?'Muito bem Anna! 🌟':'Amazing Anna! 🌟';
+      return lang==='fr'?'Essaie encore ! 💪':lang==='pt'?'Tenta outra vez! 💪':'Try again! 💪';
+    }
+  }
+
+  // ── Fallbacks ─────────────────────────────────────────────
+  const FALLBACK_MEMORY = [
+    {emoji:'🐱',label_en:'Cat',label_fr:'Chat',label_pt:'Gato'},
+    {emoji:'🐶',label_en:'Dog',label_fr:'Chien',label_pt:'Cachorro'},
+    {emoji:'🐸',label_en:'Frog',label_fr:'Grenouille',label_pt:'Rã'},
+    {emoji:'🦋',label_en:'Butterfly',label_fr:'Papillon',label_pt:'Borboleta'},
+    {emoji:'🐠',label_en:'Fish',label_fr:'Poisson',label_pt:'Peixe'},
+    {emoji:'🐧',label_en:'Penguin',label_fr:'Pingouin',label_pt:'Pinguim'},
+    {emoji:'🦁',label_en:'Lion',label_fr:'Lion',label_pt:'Leão'},
+    {emoji:'🐘',label_en:'Elephant',label_fr:'Éléphant',label_pt:'Elefante'},
+  ];
+  const FALLBACK_SPELLING = [
+    {word:'CAT',emoji:'🐱',hint_en:'A fluffy pet',hint_fr:'Un animal doux',hint_pt:'Um animal fofo'},
+    {word:'DOG',emoji:'🐶',hint_en:'Man\'s best friend',hint_fr:'Le meilleur ami',hint_pt:'O melhor amigo'},
+    {word:'SUN',emoji:'☀️',hint_en:'Shines in the sky',hint_fr:'Brille dans le ciel',hint_pt:'Brilha no céu'},
+    {word:'BEE',emoji:'🐝',hint_en:'Makes honey',hint_fr:'Fait du miel',hint_pt:'Faz mel'},
+    {word:'HAT',emoji:'🎩',hint_en:'Worn on your head',hint_fr:'Porté sur la tête',hint_pt:'Na cabeça'},
+    {word:'EGG',emoji:'🥚',hint_en:'Laid by a hen',hint_fr:'Pondu par une poule',hint_pt:'Botado pela galinha'},
+  ];
+  const FALLBACK_MATH = [
+    {question_en:'How many 🍎?',question_fr:'Combien de 🍎 ?',question_pt:'Quantas 🍎?',visual:'🍎🍎🍎',answer:3,choices:[2,3,4]},
+    {question_en:'How many 🌟?',question_fr:'Combien de 🌟 ?',question_pt:'Quantas 🌟?',visual:'🌟🌟',answer:2,choices:[1,2,3]},
+    {question_en:'2 🐱 + 1 🐱 = ?',question_fr:'2 🐱 + 1 🐱 = ?',question_pt:'2 🐱 + 1 🐱 = ?',visual:'🐱🐱➕🐱',answer:3,choices:[2,3,4]},
+    {question_en:'How many 🌸?',question_fr:'Combien de 🌸 ?',question_pt:'Quantas 🌸?',visual:'🌸🌸🌸🌸',answer:4,choices:[3,4,5]},
+    {question_en:'1 🐶 + 2 🐶 = ?',question_fr:'1 🐶 + 2 🐶 = ?',question_pt:'1 🐶 + 2 🐶 = ?',visual:'🐶➕🐶🐶',answer:3,choices:[2,3,4]},
+    {question_en:'How many 🦋?',question_fr:'Combien de 🦋 ?',question_pt:'Quantas 🦋?',visual:'🦋🦋🦋🦋🦋',answer:5,choices:[4,5,6]},
+    {question_en:'3 🌈 + 1 🌈 = ?',question_fr:'3 🌈 + 1 🌈 = ?',question_pt:'3 🌈 + 1 🌈 = ?',visual:'🌈🌈🌈➕🌈',answer:4,choices:[3,4,5]},
+    {question_en:'How many ⭐?',question_fr:'Combien d\'⭐ ?',question_pt:'Quantas ⭐?',visual:'⭐⭐',answer:2,choices:[1,2,3]},
+  ];
+  const FALLBACK_VOCAB = [
+    {emoji:'🚗',word_en:'Car',word_fr:'Voiture',word_pt:'Carro'},
+    {emoji:'🚂',word_en:'Train',word_fr:'Train',word_pt:'Trem'},
+    {emoji:'✈️',word_en:'Plane',word_fr:'Avion',word_pt:'Avião'},
+    {emoji:'🚢',word_en:'Ship',word_fr:'Bateau',word_pt:'Navio'},
+    {emoji:'🚲',word_en:'Bike',word_fr:'Vélo',word_pt:'Bicicleta'},
+    {emoji:'🚁',word_en:'Helicopter',word_fr:'Hélicoptère',word_pt:'Helicóptero'},
+    {emoji:'🚀',word_en:'Rocket',word_fr:'Fusée',word_pt:'Foguete'},
+    {emoji:'🛸',word_en:'UFO',word_fr:'OVNI',word_pt:'OVNI'},
+    {emoji:'🏍️',word_en:'Motorbike',word_fr:'Moto',word_pt:'Moto'},
+    {emoji:'🚜',word_en:'Tractor',word_fr:'Tracteur',word_pt:'Tractor'},
+  ];
+  const FALLBACK_DRAG = {
+    title:{en:'🌊 Sort by home!',fr:'🌊 Trie par habitat !',pt:'🌊 Ordena por habitat!'},
+    items:[
+      {label:{en:'🐟 Fish',fr:'🐟 Poisson',pt:'🐟 Peixe'},target:'water'},
+      {label:{en:'🦅 Eagle',fr:'🦅 Aigle',pt:'🦅 Águia'},target:'sky'},
+      {label:{en:'🐻 Bear',fr:'🐻 Ours',pt:'🐻 Urso'},target:'land'},
+      {label:{en:'🐬 Dolphin',fr:'🐬 Dauphin',pt:'🐬 Golfinho'},target:'water'},
+      {label:{en:'🦋 Butterfly',fr:'🦋 Papillon',pt:'🦋 Borboleta'},target:'sky'},
+      {label:{en:'🦊 Fox',fr:'🦊 Renard',pt:'🦊 Raposa'},target:'land'},
+    ],
+    zones:[
+      {id:'water',label:{en:'💧 Water',fr:'💧 Eau',pt:'💧 Água'},color:'#DBEAFE'},
+      {id:'sky',label:{en:'☁️ Sky',fr:'☁️ Ciel',pt:'☁️ Céu'},color:'#E0F2FE'},
+      {id:'land',label:{en:'🌿 Land',fr:'🌿 Terre',pt:'🌿 Terra'},color:'#D1FAE5'},
+    ]
+  };
+
+  return { generateDailyStory, generateMemoryCards, generateSpellingWords,
+    generateMathProblems, generateDragGame, generateVocabWords, getTutorReaction,
+    FALLBACK_MEMORY, FALLBACK_SPELLING, FALLBACK_MATH, FALLBACK_VOCAB, FALLBACK_DRAG };
+})();
+
+window.Letters = (() => {
+  const DATA = [
+    {l:'A',e:'🍎',w:{en:'Apple',fr:'Pomme',pt:'Maçã'}},{l:'B',e:'🦋',w:{en:'Butterfly',fr:'Papillon',pt:'Borboleta'}},
+    {l:'C',e:'🐱',w:{en:'Cat',fr:'Chat',pt:'Gato'}},{l:'D',e:'🐶',w:{en:'Dog',fr:'Chien',pt:'Cachorro'}},
+    {l:'E',e:'🐘',w:{en:'Elephant',fr:'Éléphant',pt:'Elefante'}},{l:'F',e:'🌸',w:{en:'Flower',fr:'Fleur',pt:'Flor'}},
+    {l:'G',e:'🍇',w:{en:'Grapes',fr:'Raisin',pt:'Uvas'}},{l:'H',e:'🏠',w:{en:'House',fr:'Maison',pt:'Casa'}},
+    {l:'I',e:'🍦',w:{en:'Ice cream',fr:'Glace',pt:'Sorvete'}},{l:'J',e:'🪁',w:{en:'Kite',fr:'Cerf-volant',pt:'Pipa'}},
+    {l:'K',e:'👑',w:{en:'King',fr:'Roi',pt:'Rei'}},{l:'L',e:'🦁',w:{en:'Lion',fr:'Lion',pt:'Leão'}},
+    {l:'M',e:'🌙',w:{en:'Moon',fr:'Lune',pt:'Lua'}},{l:'N',e:'🌈',w:{en:'Rainbow',fr:'Arc-en-ciel',pt:'Arco-íris'}},
+    {l:'O',e:'🦉',w:{en:'Owl',fr:'Hibou',pt:'Coruja'}},{l:'P',e:'🐧',w:{en:'Penguin',fr:'Pingouin',pt:'Pinguim'}},
+    {l:'Q',e:'👸',w:{en:'Queen',fr:'Reine',pt:'Rainha'}},{l:'R',e:'🌹',w:{en:'Rose',fr:'Rose',pt:'Rosa'}},
+    {l:'S',e:'⭐',w:{en:'Star',fr:'Étoile',pt:'Estrela'}},{l:'T',e:'🐯',w:{en:'Tiger',fr:'Tigre',pt:'Tigre'}},
+    {l:'U',e:'☂️',w:{en:'Umbrella',fr:'Parapluie',pt:'Guarda-chuva'}},{l:'V',e:'🌷',w:{en:'Violet',fr:'Violette',pt:'Violeta'}},
+    {l:'W',e:'🐋',w:{en:'Whale',fr:'Baleine',pt:'Baleia'}},{l:'X',e:'🎸',w:{en:'Xylophone',fr:'Xylophone',pt:'Xilofone'}},
+    {l:'Y',e:'🧶',w:{en:'Yarn',fr:'Fil',pt:'Novelo'}},{l:'Z',e:'🦓',w:{en:'Zebra',fr:'Zèbre',pt:'Zebra'}},
+  ];
+
+  function render(container, lang) {
+    const greet = lang==='fr'?"Apprenons les lettres ! 🌟 Appuie sur une lettre !":lang==='pt'?"Vamos aprender as letras! 🌟 Toca numa letra!":"Let's learn our letters! 🌟 Tap any letter to hear it!";
+    container.innerHTML = `<div class="ai-bubble"><span class="cat">🐱</span>${greet}</div>`;
+    const grid = document.createElement('div');
+    grid.className = 'item-grid';
+    DATA.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'grid-card';
+      card.style.borderColor = `hsl(${d.l.charCodeAt(0)*13%360},70%,85%)`;
+      card.style.border = '3px solid';
+      card.innerHTML = `<span class="grid-big" style="color:hsl(${d.l.charCodeAt(0)*13%360},60%,55%)">${d.l}</span><span class="grid-emoji">${d.e}</span><span class="grid-word">${d.w[lang]||d.w.en}</span>`;
+      card.onclick = () => {
+        TTS.speak(`${d.l}... ${d.w[lang]||d.w.en}`, lang);
+        card.style.background = `hsl(${d.l.charCodeAt(0)*13%360},70%,95%)`;
+        setTimeout(() => card.style.background = '', 600);
+      };
+      grid.appendChild(card);
+    });
+    container.appendChild(grid);
+  }
+  return { render };
+})();
+
+// ── NUMBERS ──────────────────────────────────────────────────
+window.Numbers = (() => {
+  const DATA = [
+    {n:1,e:'🍎',w:{en:'One',fr:'Un',pt:'Um'}},{n:2,e:'🍎🍎',w:{en:'Two',fr:'Deux',pt:'Dois'}},
+    {n:3,e:'🍎🍎🍎',w:{en:'Three',fr:'Trois',pt:'Três'}},{n:4,e:'🌟🌟🌟🌟',w:{en:'Four',fr:'Quatre',pt:'Quatro'}},
+    {n:5,e:'🌸🌸🌸🌸🌸',w:{en:'Five',fr:'Cinq',pt:'Cinco'}},{n:6,e:'🐱🐱🐱🐱🐱🐱',w:{en:'Six',fr:'Six',pt:'Seis'}},
+    {n:7,e:'🦋🦋🦋🦋🦋🦋🦋',w:{en:'Seven',fr:'Sept',pt:'Sete'}},{n:8,e:'⭐⭐⭐⭐⭐⭐⭐⭐',w:{en:'Eight',fr:'Huit',pt:'Oito'}},
+    {n:9,e:'🌈🌈🌈🌈🌈🌈🌈🌈🌈',w:{en:'Nine',fr:'Neuf',pt:'Nove'}},{n:10,e:'🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉',w:{en:'Ten',fr:'Dix',pt:'Dez'}},
+  ];
+  function render(container, lang) {
+    const greet = lang==='fr'?"Comptons ensemble ! 🎉":lang==='pt'?"Vamos contar juntos! 🎉":"Let's count together! 🎉 Tap a number!";
+    container.innerHTML = `<div class="ai-bubble"><span class="cat">🐱</span>${greet}</div>`;
+    const grid = document.createElement('div');
+    grid.className = 'item-grid';
+    grid.style.maxWidth = '700px';
+    DATA.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'grid-card';
+      card.style.border = '3px solid var(--yellow-l)';
+      card.innerHTML = `<span class="grid-big" style="color:var(--orange)">${d.n}</span><span class="grid-emoji" style="font-size:.9rem;letter-spacing:1px">${d.e}</span><span class="grid-word">${d.w[lang]||d.w.en}</span>`;
+      card.onclick = () => {
+        TTS.speak(`${d.w[lang]||d.w.en}... ${d.n}`, lang);
+        card.style.background = 'var(--yellow-l)';
+        setTimeout(() => card.style.background = '', 600);
+        if (d.n === 10) App.celebrate(lang==='fr'?'🎉 Dix ! 🎉':lang==='pt'?'🎉 Dez! 🎉':'🎉 Ten! 🎉');
+      };
+      grid.appendChild(card);
+    });
+    container.appendChild(grid);
+  }
+  return { render };
+})();
+
+// ── SHAPES & COLORS ──────────────────────────────────────────
+window.Shapes = (() => {
+  const COLORS = [
+    {n:{en:'Red',fr:'Rouge',pt:'Vermelho'},e:'🔴',bg:'#FF6B6B'},
+    {n:{en:'Blue',fr:'Bleu',pt:'Azul'},e:'🔵',bg:'#74B0FF'},
+    {n:{en:'Yellow',fr:'Jaune',pt:'Amarelo'},e:'🟡',bg:'#FFD166'},
+    {n:{en:'Green',fr:'Vert',pt:'Verde'},e:'🟢',bg:'#06D6A0'},
+    {n:{en:'Pink',fr:'Rose',pt:'Rosa'},e:'🩷',bg:'#FF8FAB'},
+    {n:{en:'Purple',fr:'Violet',pt:'Roxo'},e:'🟣',bg:'#B57BFF'},
+    {n:{en:'Orange',fr:'Orange',pt:'Laranja'},e:'🟠',bg:'#FF9F5B'},
+    {n:{en:'White',fr:'Blanc',pt:'Branco'},e:'⬜',bg:'#DDD'},
+  ];
+  const SHAPES = [
+    {n:{en:'Circle',fr:'Cercle',pt:'Círculo'},e:'⭕'},
+    {n:{en:'Square',fr:'Carré',pt:'Quadrado'},e:'🟥'},
+    {n:{en:'Triangle',fr:'Triangle',pt:'Triângulo'},e:'🔺'},
+    {n:{en:'Star',fr:'Étoile',pt:'Estrela'},e:'⭐'},
+    {n:{en:'Heart',fr:'Cœur',pt:'Coração'},e:'❤️'},
+    {n:{en:'Diamond',fr:'Losange',pt:'Diamante'},e:'🔷'},
+    {n:{en:'Rectangle',fr:'Rectangle',pt:'Retângulo'},e:'▬'},
+    {n:{en:'Oval',fr:'Ovale',pt:'Oval'},e:'🥚'},
+  ];
+  function render(container, lang) {
+    container.innerHTML = `<div class="ai-bubble"><span class="cat">🐱</span>${lang==='fr'?"Les couleurs et les formes ! 🎨 Appuie pour apprendre !":lang==='pt'?"Cores e formas! 🎨 Toca para aprender!":"Colors and shapes! 🎨 Tap to learn each one!"}</div>`;
+    const ct = document.createElement('div');
+    ct.style.cssText='font-family:Fredoka One,cursive;font-size:1.2rem;color:#7B2D8B;margin-bottom:.5em;text-align:center';
+    ct.textContent = lang==='fr'?'Les Couleurs 🎨':lang==='pt'?'As Cores 🎨':'Colors 🎨';
+    container.appendChild(ct);
+    const cg = document.createElement('div');
+    cg.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(80px,15vw,130px),1fr));gap:.8em;width:100%;max-width:700px';
+    COLORS.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'grid-card';
+      card.style.cssText=`background:${d.bg};border:4px solid rgba(255,255,255,.8);`;
+      card.innerHTML = `<span style="font-size:2rem;display:block">${d.e}</span><span style="font-family:Fredoka One,cursive;color:white;text-shadow:1px 1px 3px rgba(0,0,0,.3)">${d.n[lang]||d.n.en}</span>`;
+      card.onclick = () => TTS.speak(d.n[lang]||d.n.en, lang);
+      cg.appendChild(card);
+    });
+    container.appendChild(cg);
+    const st = document.createElement('div');
+    st.style.cssText='font-family:Fredoka One,cursive;font-size:1.2rem;color:#7B2D8B;margin:1em 0 .5em;text-align:center';
+    st.textContent = lang==='fr'?'Les Formes ⭐':lang==='pt'?'As Formas ⭐':'Shapes ⭐';
+    container.appendChild(st);
+    const sg = document.createElement('div');
+    sg.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(80px,15vw,120px),1fr));gap:.8em;width:100%;max-width:700px';
+    SHAPES.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'grid-card';
+      card.style.border = '3px solid var(--teal-l)';
+      card.innerHTML = `<span style="font-size:2.5rem;display:block">${d.e}</span><span style="font-family:Fredoka One,cursive;font-size:.9rem;color:#444">${d.n[lang]||d.n.en}</span>`;
+      card.onclick = () => TTS.speak(d.n[lang]||d.n.en, lang);
+      sg.appendChild(card);
+    });
+    container.appendChild(sg);
+  }
+  return { render };
+})();
+
+// ── FRENCH WORDS ─────────────────────────────────────────────
+window.French = (() => {
+  const WORDS = [
+    {fr:'Bonjour',en:'Hello',pt:'Olá',e:'👋'},{fr:'Merci',en:'Thank you',pt:'Obrigada',e:'🙏'},
+    {fr:'Chat',en:'Cat',pt:'Gato',e:'🐱'},{fr:'Chien',en:'Dog',pt:'Cachorro',e:'🐶'},
+    {fr:'Maison',en:'House',pt:'Casa',e:'🏠'},{fr:'Soleil',en:'Sun',pt:'Sol',e:'☀️'},
+    {fr:'Fleur',en:'Flower',pt:'Flor',e:'🌸'},{fr:'Pomme',en:'Apple',pt:'Maçã',e:'🍎'},
+    {fr:'Eau',en:'Water',pt:'Água',e:'💧'},{fr:'Amour',en:'Love',pt:'Amor',e:'❤️'},
+    {fr:'École',en:'School',pt:'Escola',e:'🏫'},{fr:'Ami',en:'Friend',pt:'Amigo',e:'🤝'},
+    {fr:'Lune',en:'Moon',pt:'Lua',e:'🌙'},{fr:'Étoile',en:'Star',pt:'Estrela',e:'⭐'},
+    {fr:'Arc-en-ciel',en:'Rainbow',pt:'Arco-íris',e:'🌈'},{fr:'Papillon',en:'Butterfly',pt:'Borboleta',e:'🦋'},
+  ];
+  function render(container, lang) {
+    container.innerHTML = `<div class="ai-bubble"><span class="cat">🐱</span>Bonjour ! 🇫🇷 ${lang==='fr'?"Apprenons des mots français !":lang==='pt'?"Vamos aprender palavras francesas!":"Let's learn French words! Tap to hear!"}</div>`;
+    const grid = document.createElement('div');
+    grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(100px,18vw,150px),1fr));gap:.8em;width:100%;max-width:700px';
+    WORDS.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'grid-card';
+      card.style.border = '3px solid var(--purple-l)';
+      const trans = lang==='pt'?d.pt:d.en;
+      card.innerHTML = `<span style="font-size:2rem;display:block">${d.e}</span><span style="font-family:Fredoka One,cursive;font-size:1.1rem;color:var(--purple)">${d.fr}</span><span style="font-size:.7rem;color:#888;font-weight:700">${trans}</span>`;
+      card.onmouseenter = card.ontouchstart = () => card.style.borderColor='var(--purple)';
+      card.onmouseleave = card.ontouchend = () => card.style.borderColor='var(--purple-l)';
+      card.onclick = () => { TTS.speak(d.fr,'fr'); setTimeout(()=>TTS.speak(trans,lang),900); };
+      grid.appendChild(card);
+    });
+    container.appendChild(grid);
+  }
+  return { render };
+})();
+
+// ── LISTEN & REPEAT ──────────────────────────────────────────
+window.Listen = (() => {
+  const FALLBACK = [
+    {e:'⭐',w:{en:'Star',fr:'Étoile',pt:'Estrela'}},{e:'🦋',w:{en:'Butterfly',fr:'Papillon',pt:'Borboleta'}},
+    {e:'🌈',w:{en:'Rainbow',fr:'Arc-en-ciel',pt:'Arco-íris'}},{e:'🌸',w:{en:'Flower',fr:'Fleur',pt:'Flor'}},
+    {e:'🌙',w:{en:'Moon',fr:'Lune',pt:'Lua'}},{e:'🍎',w:{en:'Apple',fr:'Pomme',pt:'Maçã'}},
+    {e:'🐱',w:{en:'Cat',fr:'Chat',pt:'Gato'}},{e:'🏠',w:{en:'House',fr:'Maison',pt:'Casa'}},
+    {e:'☀️',w:{en:'Sun',fr:'Soleil',pt:'Sol'}},{e:'❤️',w:{en:'Heart',fr:'Cœur',pt:'Coração'}},
+  ];
+  let idx = 0, words = [];
+
+  function render(container, lang, daily) {
+    words = [];
+    if (daily.vocab) {
+      daily.vocab.forEach(v => words.push({ e: v.emoji, w: { en: v.word_en||v.word, fr: v.word_fr||v.word, pt: v.word_pt||v.word } }));
+    }
+    if (!words.length) words = [...FALLBACK];
+    idx = 0;
+    showCard(container, lang);
+  }
+
+  function showCard(container, lang) {
+    const w = words[idx];
+    const word = w.w[lang] || w.w.en;
+    const also = lang==='en'?`🇫🇷 ${w.w.fr}  🇧🇷 ${w.w.pt}`:lang==='fr'?`🇬🇧 ${w.w.en}  🇧🇷 ${w.w.pt}`:`🇬🇧 ${w.w.en}  🇫🇷 ${w.w.fr}`;
+    container.innerHTML = `
+      <div class="ai-bubble"><span class="cat">🐱</span>${lang==='fr'?"Écoute bien et répète !":lang==='pt'?"Ouve e repete!":"Listen and repeat!"}</div>
+      <div class="listen-card">
+        <span class="listen-emoji-big">${w.e}</span>
+        <span class="listen-word">${word}</span>
+        <span class="listen-trans">${also}</span>
+        <div class="listen-btns">
+          <button class="btn btn-success" onclick="TTS.speak('${word.replace(/'/g,"\\'")}','${lang}')">🔊 ${lang==='fr'?'Écoute':lang==='pt'?'Ouvir':'Listen'}</button>
+          <button class="btn btn-info" onclick="TTS.speak('${w.w.fr.replace(/'/g,"\\'")}','fr')">🇫🇷 ${w.w.fr}</button>
+          <button class="btn btn-primary" onclick="Listen._next('${lang}')">⏭ ${lang==='fr'?'Suivant':lang==='pt'?'Próximo':'Next'}</button>
+        </div>
+      </div>
+      <button class="btn btn-warn" onclick="Listen._quiz(this.parentElement,'${lang}')">🎯 Quiz!</button>`;
+    TTS.speak(word, lang);
+  }
+
+  function _next(lang) {
+    idx = (idx + 1) % words.length;
+    showCard(document.getElementById('activity-body'), lang);
+  }
+
+  function _quiz(container, lang) {
+    const w = words[idx];
+    const word = w.w[lang] || w.w.en;
+    const wrong = words.filter((_,i)=>i!==idx).sort(()=>Math.random()-.5).slice(0,3);
+    const opts = [...wrong, w].sort(()=>Math.random()-.5);
+    const panel = document.createElement('div');
+    panel.className = 'quiz-panel';
+    panel.innerHTML = `<div class="quiz-question"><span class="quiz-emoji">${w.e}</span><span class="quiz-q-text">${lang==='fr'?'Quel est ce mot ?':lang==='pt'?'Qual é esta palavra?':'What word is this?'}</span></div>
+      <div class="quiz-answers">${opts.map(o=>`<button class="quiz-ans" onclick="Listen._check(this,'${o.e}','${w.e}','${lang}')">${o.e} ${o.w[lang]||o.w.en}</button>`).join('')}</div>`;
+    const old = container.querySelector('.quiz-panel');
+    if (old) old.remove();
+    container.appendChild(panel);
+    TTS.speak(word, lang);
+  }
+
+  async function _check(btn, chosen, correct, lang) {
+    const panel = btn.closest('.quiz-panel');
+    panel.querySelectorAll('.quiz-ans').forEach(b=>b.style.pointerEvents='none');
+    if (chosen === correct) {
+      btn.classList.add('correct');
+      App.celebrate('🌟');
+      const msg = await AI.getTutorReaction(true, 'vocabulary', lang, btn.textContent);
+      document.querySelector('.ai-bubble').innerHTML = `<span class="cat">🐱</span>${msg}`;
+    } else {
+      btn.classList.add('wrong');
+      panel.querySelectorAll('.quiz-ans').forEach(b=>{ if(b.onclick?.toString().includes(correct)) b.classList.add('correct'); });
+      const msg = await AI.getTutorReaction(false, 'vocabulary', lang, btn.textContent);
+      document.querySelector('.ai-bubble').innerHTML = `<span class="cat">🐱</span>${msg}`;
+    }
+    setTimeout(() => _next(lang), 2200);
+  }
+
+  return { render, _next, _quiz, _check };
+})();
+
+// ── DRAG & DROP ───────────────────────────────────────────────
+window.Drag = (() => {
+  let dragEl = null, touchClone = null;
+
+  function render(container, lang, daily) {
+    const game = (daily.drag) || AI.FALLBACK_DRAG;
+    container.innerHTML = `<div class="ai-bubble"><span class="cat">🐱</span>${lang==='fr'?"Glisse chaque objet dans la bonne maison ! 🐾":lang==='pt'?"Arrasta cada objeto para o lugar certo! 🐾":"Drag each item to the right place! 🐾"}</div>`;
+    const panel = document.createElement('div');
+    panel.className = 'drag-panel';
+    panel.innerHTML = `<div class="drag-title">${game.title[lang]||game.title.en}</div>`;
+
+    const itemsEl = document.createElement('div'); itemsEl.className = 'drag-items';
+    [...game.items].sort(()=>Math.random()-.5).forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'drag-item';
+      el.textContent = item.label[lang]||item.label.en;
+      el.dataset.target = item.target;
+      el.draggable = true;
+      el.addEventListener('dragstart', e => { dragEl=el; el.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; });
+      el.addEventListener('dragend', () => { el.classList.remove('dragging'); dragEl=null; });
+      el.addEventListener('touchstart', touchStart, {passive:false});
+      el.addEventListener('touchmove', touchMove, {passive:false});
+      el.addEventListener('touchend', touchEnd);
+      itemsEl.appendChild(el);
+    });
+    panel.appendChild(itemsEl);
+
+    const zonesEl = document.createElement('div'); zonesEl.className = 'drop-zones';
+    game.zones.forEach(z => {
+      const el = document.createElement('div');
+      el.className = 'drop-zone';
+      el.dataset.zoneId = z.id;
+      el.style.background = z.color||'var(--yellow-l)';
+      el.style.borderColor = z.color?z.color.replace('FF','99'):'var(--yellow)';
+      el.textContent = z.label[lang]||z.label.en;
+      el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('over'); });
+      el.addEventListener('dragleave', () => el.classList.remove('over'));
+      el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('over'); handleDrop(el, lang, daily); });
+      zonesEl.appendChild(el);
+    });
+    panel.appendChild(zonesEl);
+    container.appendChild(panel);
+  }
+
+  async function handleDrop(zone, lang, daily) {
+    if (!dragEl) return;
+    const ok = dragEl.dataset.target === zone.dataset.zoneId;
+    zone.classList.remove('over');
+    if (ok) {
+      zone.classList.add('correct');
+      zone.textContent = dragEl.textContent;
+      dragEl.remove();
+      dragEl = null;
+      const remaining = document.querySelectorAll('.drag-item').length;
+      if (remaining === 0) {
+        App.celebrate(lang==='fr'?'🎉 Parfait !':lang==='pt'?'🎉 Perfeito!':'🎉 Perfect!');
+        setTimeout(() => render(document.getElementById('activity-body'), lang, daily), 2800);
+      } else {
+        const msg = await AI.getTutorReaction(true, 'sorting', lang, zone.textContent);
+        const bubble = document.querySelector('.ai-bubble');
+        if (bubble) bubble.innerHTML = `<span class="cat">🐱</span>${msg}`;
+      }
+    } else {
+      zone.classList.add('wrong');
+      const msg = await AI.getTutorReaction(false, 'sorting', lang, dragEl.textContent);
+      const bubble = document.querySelector('.ai-bubble');
+      if (bubble) bubble.innerHTML = `<span class="cat">🐱</span>${msg}`;
+      setTimeout(() => zone.classList.remove('wrong'), 800);
+      dragEl = null;
+    }
+  }
+
+  function touchStart(e) {
+    e.preventDefault(); dragEl = e.currentTarget; dragEl.classList.add('dragging');
+    touchClone = dragEl.cloneNode(true);
+    touchClone.style.cssText = 'position:fixed;pointer-events:none;z-index:999;opacity:.8;transform:scale(1.1)';
+    document.body.appendChild(touchClone);
+    moveTouchClone(e.touches[0]);
+  }
+  function touchMove(e) {
+    e.preventDefault(); if(!touchClone) return; moveTouchClone(e.touches[0]);
+    document.querySelectorAll('.drop-zone').forEach(z=>z.classList.remove('over'));
+    const el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+    el?.closest('.drop-zone')?.classList.add('over');
+  }
+  function touchEnd(e) {
+    if(!touchClone) return;
+    const touch = e.changedTouches[0];
+    touchClone.remove(); touchClone=null;
+    dragEl.classList.remove('dragging');
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    const zone = el?.closest('.drop-zone');
+    document.querySelectorAll('.drop-zone').forEach(z=>z.classList.remove('over'));
+    const lang = App.lang;
+    const daily = App.daily;
+    if (zone) handleDrop(zone, lang, daily);
+    else dragEl=null;
+  }
+  function moveTouchClone(t) {
+    touchClone.style.left=(t.clientX-40)+'px'; touchClone.style.top=(t.clientY-20)+'px';
+  }
+  return { render };
+})();
+
+// ── MEMORY MATCH ─────────────────────────────────────────────
+window.Memory = (() => {
+  let flipped=[], matched=0, total=0, locked=false;
+
+  function render(container, lang, daily) {
+    flipped=[]; matched=0; locked=false;
+    const cards = daily.memory ? daily.memory : AI.FALLBACK_MEMORY;
+    total = cards.length;
+    container.innerHTML = `<div class="ai-bubble"><span class="cat">🐱</span>${lang==='fr'?"Trouve les paires ! 🃏 Retourne deux cartes !":lang==='pt'?"Encontra os pares! 🃏 Vira duas cartas!":"Find the matching pairs! 🃏 Flip two cards!"}</div>`;
+
+    const scoreEl = document.createElement('div');
+    scoreEl.id = 'mem-score';
+    scoreEl.style.cssText='font-family:Fredoka One,cursive;font-size:1rem;color:#7B2D8B;margin-bottom:.3em';
+    scoreEl.textContent = `✨ 0 / ${total}`;
+    container.appendChild(scoreEl);
+
+    const grid = document.createElement('div');
+    grid.className = 'memory-grid';
+
+    // Duplicate and shuffle
+    const deck = [...cards, ...cards].map((c,i) => ({...c, uid:i})).sort(()=>Math.random()-.5);
+    deck.forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'mem-card';
+      card.dataset.emoji = c.emoji;
+      card.innerHTML = `<div class="mem-card-back">⭐</div><div class="mem-card-face">${c.emoji}<div style="font-size:.6rem;font-family:Fredoka One,cursive;color:#7B2D8B;margin-top:3px">${c['label_'+lang]||c.label_en}</div></div>`;
+      card.onclick = () => flip(card, lang, daily);
+      grid.appendChild(card);
+    });
+    container.appendChild(grid);
+  }
+
+  async function flip(card, lang, daily) {
+    if (locked || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+    card.classList.add('flipped');
+    flipped.push(card);
+    TTS.speak(card.dataset.emoji, lang);
+    if (flipped.length === 2) {
+      locked = true;
+      if (flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
+        flipped.forEach(c => c.classList.add('matched'));
+        matched++;
+        document.getElementById('mem-score').textContent = `✨ ${matched} / ${total}`;
+        const msg = await AI.getTutorReaction(true,'memory',lang,card.dataset.emoji);
+        const b = document.querySelector('.ai-bubble'); if(b) b.innerHTML=`<span class="cat">🐱</span>${msg}`;
+        flipped=[];
+        locked=false;
+        if (matched===total) {
+          App.celebrate(lang==='fr'?'🎉 Incroyable !':lang==='pt'?'🎉 Incrível!':'🎉 Amazing!');
+          setTimeout(()=>render(document.getElementById('activity-body'),lang,daily),3000);
+        }
+      } else {
+        const msg = await AI.getTutorReaction(false,'memory',lang,'');
+        const b = document.querySelector('.ai-bubble'); if(b) b.innerHTML=`<span class="cat">🐱</span>${msg}`;
+        setTimeout(()=>{ flipped.forEach(c=>c.classList.remove('flipped')); flipped=[]; locked=false; },1000);
+      }
+    }
+  }
+  return { render };
+})();
+
+// ── MATH ─────────────────────────────────────────────────────
+window.MathAct = (() => {
+  let idx=0, data=[];
+
+  function render(container, lang, daily) {
+    data = daily.math ? [...daily.math] : [...AI.FALLBACK_MATH];
+    data.sort(()=>Math.random()-.5);
+    idx=0;
+    showQ(container, lang, daily);
+  }
+
+  function showQ(container, lang, daily) {
+    if (idx >= data.length) {
+      App.celebrate(lang==='fr'?'🏆 Bravo !':lang==='pt'?'🏆 Parabéns!':'🏆 All done!');
+      setTimeout(()=>render(container,lang,daily),2500);
+      return;
+    }
+    const q = data[idx];
+    const question = q['question_'+lang]||q.question_en;
+    const pct = Math.round((idx/data.length)*100);
+    container.innerHTML = `
+      <div class="ai-bubble"><span class="cat">🐱</span>${lang==='fr'?"Comptons ! 🔢":lang==='pt'?"Vamos contar! 🔢":"Let's count! 🔢"}</div>
+      <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+      <div class="math-panel">
+        <div class="math-question">${question}</div>
+        <div class="math-visual">${q.visual}</div>
+        <div class="math-choices">${q.choices.sort(()=>Math.random()-.5).map(c=>`<button class="math-choice" onclick="MathAct._pick(this,${c},${q.answer},'${lang}')">${c}</button>`).join('')}</div>
+      </div>`;
+    TTS.speak(question.replace(/[^\w\s+\-=?]/g,''), lang);
+  }
+
+  async function _pick(btn, chosen, answer, lang) {
+    document.querySelectorAll('.math-choice').forEach(b=>b.style.pointerEvents='none');
+    if (chosen===answer) {
+      btn.classList.add('correct');
+      App.celebrate('✨ '+answer+' ✨');
+      const msg = await AI.getTutorReaction(true,'math',lang,String(chosen));
+      const b=document.querySelector('.ai-bubble'); if(b) b.innerHTML=`<span class="cat">🐱</span>${msg}`;
+      idx++;
+      setTimeout(()=>showQ(document.getElementById('activity-body'),lang,App.daily),1800);
+    } else {
+      btn.classList.add('wrong');
+      document.querySelectorAll('.math-choice').forEach(b=>{ if(parseInt(b.textContent)===answer) b.classList.add('correct'); });
+      const msg = await AI.getTutorReaction(false,'math',lang,String(chosen));
+      const b=document.querySelector('.ai-bubble'); if(b) b.innerHTML=`<span class="cat">🐱</span>${msg}`;
+      setTimeout(()=>{ document.querySelectorAll('.math-choice').forEach(b=>{b.classList.remove('correct','wrong');b.style.pointerEvents=''}); },1500);
+    }
+  }
+  return { render, _pick };
+})();
+
+// ── SPELLING ─────────────────────────────────────────────────
+window.Spelling = (() => {
+  let idx=0, typed=[], words=[];
+
+  function render(container, lang, daily) {
+    words = daily.spelling ? [...daily.spelling] : [...AI.FALLBACK_SPELLING];
+    words.sort(()=>Math.random()-.5);
+    idx=0; typed=[];
+    showWord(container, lang);
+  }
+
+  function showWord(container, lang) {
+    if (idx >= words.length) {
+      App.celebrate(lang==='fr'?'🌟 Tu es champion !':lang==='pt'?'🌟 Campeão!':'🌟 Spelling champion!');
+      setTimeout(()=>render(container,lang,App.daily),2500);
+      return;
+    }
+    const w = words[idx];
+    typed=[];
+    const letters = w.word.split('');
+    const hint = w['hint_'+lang] || w.hint_en;
+    // Build shuffled keyboard from word letters + 6 random extras
+    const extras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(l=>!letters.includes(l)).sort(()=>Math.random()-.5).slice(0,6);
+    const keyboard = [...letters, ...extras].sort(()=>Math.random()-.5);
+    const pct = Math.round((idx/words.length)*100);
+
+    container.innerHTML = `
+      <div class="ai-bubble"><span class="cat">🐱</span>${lang==='fr'?'Épelle le mot ! 🔤':lang==='pt'?'Soletra a palavra! 🔤':'Spell the word! 🔤'}</div>
+      <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+      <div class="spell-panel">
+        <span class="spell-emoji">${w.emoji}</span>
+        <div class="spell-hint">${hint}</div>
+        <div class="spell-slots" id="spell-slots">
+          ${letters.map(()=>`<div class="spell-slot"></div>`).join('')}
+        </div>
+        <div class="spell-keyboard" id="spell-kb">
+          ${keyboard.map(l=>`<button class="spell-key" onclick="Spelling._tap('${l}','${lang}')">${l}</button>`).join('')}
+          <button class="spell-key spell-del" onclick="Spelling._del('${lang}')">⌫</button>
+        </div>
+      </div>`;
+    TTS.speak(hint, lang);
+  }
+
+  function _tap(letter, lang) {
+    const w = words[idx];
+    if (typed.length >= w.word.length) return;
+    typed.push(letter);
+    updateSlots(lang);
+    // disable used key
+    document.querySelectorAll('.spell-key:not(.spell-del)').forEach(b=>{
+      if(b.textContent===letter && !b.classList.contains('used')) { b.classList.add('used'); return; }
+    });
+    if (typed.length === w.word.length) checkSpelling(lang);
+  }
+
+  function _del(lang) {
+    if (!typed.length) return;
+    const removed = typed.pop();
+    // re-enable last used key
+    const keys = [...document.querySelectorAll('.spell-key.used')];
+    const target = keys.reverse().find(k=>k.textContent===removed);
+    if(target) target.classList.remove('used');
+    updateSlots(lang);
+  }
+
+  function updateSlots(lang) {
+    const slots = document.querySelectorAll('.spell-slot');
+    slots.forEach((s,i)=>{ s.textContent=typed[i]||''; s.classList.toggle('filled',!!typed[i]); });
+  }
+
+  async function checkSpelling(lang) {
+    const w = words[idx];
+    const ok = typed.join('') === w.word;
+    document.querySelectorAll('.spell-slot').forEach(s=>s.classList.add(ok?'correct-all':'wrong'));
+    if (ok) {
+      TTS.speak(w.word, lang);
+      App.celebrate('✨ '+w.word+' ✨');
+      const msg = await AI.getTutorReaction(true,'spelling',lang,w.word);
+      const b=document.querySelector('.ai-bubble'); if(b) b.innerHTML=`<span class="cat">🐱</span>${msg}`;
+      idx++;
+      setTimeout(()=>showWord(document.getElementById('activity-body'),lang),2000);
+    } else {
+      const msg = await AI.getTutorReaction(false,'spelling',lang,typed.join(''));
+      const b=document.querySelector('.ai-bubble'); if(b) b.innerHTML=`<span class="cat">🐱</span>${msg}`;
+      setTimeout(()=>{ typed=[]; updateSlots(lang); document.querySelectorAll('.spell-slot').forEach(s=>s.classList.remove('wrong','correct-all')); document.querySelectorAll('.spell-key').forEach(b=>b.classList.remove('used')); },1200);
+    }
+  }
+  return { render, _tap, _del };
+})();
+
+// ── SIMON SAYS ───────────────────────────────────────────────
+window.Simon = (() => {
+  const BUTTONS = [
+    {id:0,color:'#FF6B6B',emoji:'🔴',sound:'C4'},{id:1,color:'#74B0FF',emoji:'🔵',sound:'E4'},
+    {id:2,color:'#FFD166',emoji:'🟡',sound:'G4'},{id:3,color:'#06D6A0',emoji:'🟢',sound:'B4'},
+  ];
+  let sequence=[], playerSeq=[], level=0, accepting=false, playing=false;
+  let audioCtx=null;
+
+  function getAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    return audioCtx;
+  }
+
+  function playNote(freq, duration=0.25) {
+    try {
+      const ctx=getAudioCtx();
+      const osc=ctx.createOscillator(), gain=ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value=freq; osc.type='sine';
+      gain.gain.setValueAtTime(0.4,ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+duration);
+      osc.start(); osc.stop(ctx.currentTime+duration);
+    } catch(e){}
+  }
+
+  const NOTES = {C4:261.63,E4:329.63,G4:392,B4:493.88};
+
+  function render(container, lang) {
+    sequence=[]; playerSeq=[]; level=0; accepting=false; playing=false;
+    container.innerHTML = `
+      <div class="ai-bubble"><span class="cat">🐱</span>${lang==='fr'?"Regarde et répète la séquence ! 🎯":lang==='pt'?"Vê e repete a sequência! 🎯":"Watch and repeat the pattern! 🎯"}</div>
+      <div class="simon-panel">
+        <div class="simon-grid" id="simon-grid">
+          ${BUTTONS.map(b=>`<button class="simon-btn" id="simon-${b.id}" style="background:${b.color}" onclick="Simon._press(${b.id})">${b.emoji}</button>`).join('')}
+        </div>
+        <div class="simon-info" id="simon-info">${lang==='fr'?'Appuie pour commencer !':lang==='pt'?'Toca para começar!':'Tap to start!'}</div>
+        <div class="simon-score" id="simon-score">⭐ 0</div>
+        <button class="btn btn-primary" onclick="Simon._start('${lang}')">${lang==='fr'?'Commencer !':lang==='pt'?'Começar!':'Start!'}</button>
+      </div>`;
+  }
+
+  async function _start(lang) {
+    sequence=[]; playerSeq=[]; level=0;
+    document.querySelector('.btn-primary').style.display='none';
+    await addAndPlay(lang);
+  }
+
+  async function addAndPlay(lang) {
+    accepting=false; playing=true;
+    sequence.push(Math.floor(Math.random()*4));
+    level++;
+    document.getElementById('simon-score').textContent=`⭐ ${level-1}`;
+    document.getElementById('simon-info').textContent = lang==='fr'?`Niveau ${level} — regarde !`:lang==='pt'?`Nível ${level} — vê !`:`Level ${level} — watch!`;
+    await delay(600);
+    for (const id of sequence) { await lightUp(id); await delay(300); }
+    accepting=true; playerSeq=[];
+    document.getElementById('simon-info').textContent=lang==='fr'?'À toi ! 👆':lang==='pt'?'A tua vez! 👆':'Your turn! 👆';
+    playing=false;
+  }
+
+  async function lightUp(id) {
+    const btn=document.getElementById('simon-'+id);
+    btn.classList.add('lit');
+    playNote(NOTES[BUTTONS[id].sound]);
+    await delay(500);
+    btn.classList.remove('lit');
+  }
+
+  async function _press(id) {
+    if (!accepting || playing) return;
+    playNote(NOTES[BUTTONS[id].sound], 0.15);
+    await lightUp(id);
+    playerSeq.push(id);
+    const pos=playerSeq.length-1;
+    if (playerSeq[pos]!==sequence[pos]) {
+      // wrong
+      accepting=false;
+      document.getElementById('simon-info').textContent=lang_==='fr'?'Oups ! Essaie encore !':lang_==='pt'?'Oops! Tenta outra vez!':'Oops! Try again!';
+      App.celebrate('💪');
+      setTimeout(()=>render(document.getElementById('activity-body'),lang_),2000);
+      return;
+    }
+    if (playerSeq.length===sequence.length) {
+      accepting=false;
+      App.celebrate(`⭐ ${level}!`);
+      await delay(800);
+      await addAndPlay(lang_);
+    }
+  }
+
+  let lang_='en';
+  const origRender = render;
+  function renderWrapped(container, lang, daily) { lang_=lang; origRender(container, lang); }
+
+  function delay(ms) { return new Promise(r=>setTimeout(r,ms)); }
+  return { render:renderWrapped, _press, _start };
+})();
+
+// ── RHYTHM TAP ───────────────────────────────────────────────
+window.Rhythm = (() => {
+  const PATTERNS = [
+    [1,0,1,0],[1,1,0,1],[1,0,0,1,0,1],[1,1,1,0,0,1],
+    [1,0,1,1,0,0,1],[1,0,1,0,1,0],[1,1,0,0,1,1],
+  ];
+  const EMOJIS=['🌟','🎵','💛','🌸','⭐','🎶','💜'];
+  let pattern=[], playerIdx=0, playing=false, level=1, score=0;
+  let audioCtx2=null;
+
+  function getCtx() {
+    if(!audioCtx2) audioCtx2=new(window.AudioContext||window.webkitAudioContext)();
+    return audioCtx2;
+  }
+  function beep(hit=true) {
+    try {
+      const c=getCtx(), o=c.createOscillator(), g=c.createGain();
+      o.connect(g); g.connect(c.destination);
+      o.frequency.value=hit?440:220; o.type='sine';
+      g.gain.setValueAtTime(.3,c.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.15);
+      o.start(); o.stop(c.currentTime+.15);
+    }catch(e){}
+  }
+
+  function render(container, lang) {
+    level=1; score=0; playerIdx=0; playing=false;
+    showLevel(container, lang);
+  }
+
+  function showLevel(container, lang) {
+    pattern=PATTERNS[Math.min(level-1,PATTERNS.length-1)];
+    playerIdx=0;
+    const emoji=EMOJIS[level%EMOJIS.length];
+    container.innerHTML=`
+      <div class="ai-bubble"><span class="cat">🐱</span>${lang==='fr'?'Écoute le rythme et tape !':lang==='pt'?'Ouve o ritmo e bate!':'Listen to the rhythm and tap!'}</div>
+      <div class="rhythm-panel">
+        <div style="font-family:Fredoka One,cursive;font-size:1.1rem;color:#7B2D8B">${lang==='fr'?`Niveau ${level}`:lang==='pt'?`Nível ${level}`:`Level ${level}`} — ${lang==='fr'?'Écoute !':lang==='pt'?'Ouve!':'Listen!'}</div>
+        <div class="rhythm-display" id="rhythm-beats">
+          ${pattern.map((_,i)=>`<div class="rhythm-beat" id="rb-${i}">${emoji}</div>`).join('')}
+        </div>
+        <button class="rhythm-tap-btn" id="tap-btn" onclick="Rhythm._tap()" disabled>🎵</button>
+        <div style="font-family:Fredoka One,cursive;color:#AAA;font-size:.9rem" id="rhythm-status">${lang==='fr'?'Attends...':lang==='pt'?'Aguarda...':'Wait...'}</div>
+        <div style="font-family:Fredoka One,cursive;font-size:1.2rem;color:var(--purple)">⭐ ${score}</div>
+        <button class="btn btn-primary" onclick="Rhythm._play('${lang}')">${lang==='fr'?'Jouer le rythme':lang==='pt'?'Tocar o ritmo':'Play pattern'}</button>
+      </div>`;
+  }
+
+  async function _play(lang) {
+    if(playing) return;
+    playing=true;
+    document.getElementById('tap-btn').disabled=true;
+    document.getElementById('rhythm-status').textContent=lang==='fr'?'Écoute !':lang==='pt'?'Ouve!':'Listen!';
+    for(let i=0;i<pattern.length;i++){
+      const beat=document.getElementById('rb-'+i);
+      if(pattern[i]){beat.classList.add('active');beep();}
+      await delay(400);
+      if(pattern[i]) beat.classList.remove('active');
+      await delay(80);
+    }
+    playing=false; playerIdx=0;
+    document.getElementById('tap-btn').disabled=false;
+    document.getElementById('rhythm-status').textContent=lang==='fr'?'À toi ! 👆':lang==='pt'?'A tua vez! 👆':'Your turn! 👆';
+  }
+
+  function _tap() {
+    if(playing) return;
+    const beat=document.getElementById('rb-'+playerIdx);
+    if(pattern[playerIdx]===1){beat.classList.add('hit'); beep(true);}
+    else{beat.classList.add('miss'); beep(false);}
+    playerIdx++;
+    if(playerIdx>=pattern.length){
+      const hits=pattern.reduce((a,v)=>a+v,0);
+      const correct=[...document.querySelectorAll('.rhythm-beat.hit')].length;
+      const pct=correct/hits;
+      setTimeout(()=>{
+        document.querySelectorAll('.rhythm-beat').forEach(b=>b.classList.remove('hit','miss','active'));
+        if(pct>=0.7){ score+=level; level=Math.min(level+1,PATTERNS.length); App.celebrate('🎵 +'+level+'!'); }
+        else App.celebrate('💪');
+        showLevel(document.getElementById('activity-body'), App.lang);
+      },800);
+    }
+  }
+
+  function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+  return { render, _play, _tap };
+})();
+
+// ── PUZZLE ───────────────────────────────────────────────────
+window.Puzzle = (() => {
+  const SCENES = [
+    {name:{en:'Rainbow Day',fr:'Jour Arc-en-ciel',pt:'Dia Arco-íris'},pieces:['☀️','🌈','☁️','🌸','🌺','🌻','🦋','🐝','🌿','🏡','🌙','⭐']},
+    {name:{en:'Ocean World',fr:'Monde Océan',pt:'Mundo Oceano'},pieces:['🐬','🐠','🐙','🦈','🐡','🌊','🦞','🐚','🪸','🦀','⭐','🌟']},
+    {name:{en:'Jungle Friends',fr:'Amis de la Jungle',pt:'Amigos da Selva'},pieces:['🦁','🐘','🦒','🐒','🦜','🌴','🌿','🍌','🦋','🌺','🐊','🦓']},
+    {name:{en:'Space Adventure',fr:'Aventure Spatiale',pt:'Aventura Espacial'},pieces:['🚀','⭐','🌙','🪐','☄️','👽','🌌','🛸','💫','🌟','🪨','🌠']},
+  ];
+  let selected=null, placed={}, scene=null, grid=[], emptyIdx=-1;
+
+  function render(container, lang) {
+    placed={}; selected=null;
+    scene=SCENES[Math.floor(Math.random()*SCENES.length)];
+    const pieces=[...scene.pieces].sort(()=>Math.random()-.5);
+    const size=Math.ceil(Math.sqrt(pieces.length));
+    container.innerHTML=`
+      <div class="ai-bubble"><span class="cat">🐱</span>${lang==='fr'?'Assemble le puzzle ! 🧩 Touche deux pièces pour les échanger !':lang==='pt'?'Monta o puzzle! 🧩 Toca duas peças para as trocar!':'Build the puzzle! 🧩 Tap two pieces to swap them!'}</div>
+      <div class="puzzle-panel">
+        <div style="font-family:Fredoka One,cursive;font-size:1.1rem;color:#7B2D8B;text-align:center">${scene.name[lang]||scene.name.en}</div>
+        <div style="font-size:.8rem;color:#AAA;text-align:center;margin-bottom:.3em">${lang==='fr'?'Objectif':lang==='pt'?'Objetivo':'Goal'}: ${scene.pieces.join('')}</div>
+        <div class="puzzle-grid" id="puzzle-grid" style="grid-template-columns:repeat(${size},1fr)">
+          ${pieces.map((p,i)=>`<div class="puzzle-piece" id="pp-${i}" data-idx="${i}" data-emoji="${p}" onclick="Puzzle._pick(${i},'${lang}')">${p}</div>`).join('')}
+        </div>
+        <button class="btn btn-primary" onclick="Puzzle._check('${lang}')" style="margin-top:.5em">${lang==='fr'?'Vérifier !':lang==='pt'?'Verificar!':'Check!'}</button>
+      </div>`;
+    grid=pieces;
+  }
+
+  function _pick(idx, lang) {
+    const el=document.getElementById('pp-'+idx);
+    if(selected===null){ selected=idx; el.classList.add('selected'); }
+    else if(selected===idx){ selected=null; el.classList.remove('selected'); }
+    else {
+      // swap
+      const a=document.getElementById('pp-'+selected);
+      const b=document.getElementById('pp-'+idx);
+      const tmp=a.textContent; a.textContent=b.textContent; b.textContent=tmp;
+      const tmpE=a.dataset.emoji; a.dataset.emoji=b.dataset.emoji; b.dataset.emoji=tmpE;
+      a.classList.remove('selected'); selected=null;
+    }
+  }
+
+  function _check(lang) {
+    const pieces=[...document.querySelectorAll('.puzzle-piece')].map(p=>p.dataset.emoji);
+    let correct=0;
+    pieces.forEach((p,i)=>{ const el=document.getElementById('pp-'+i); el.classList.remove('correct'); if(p===scene.pieces[i]){el.classList.add('correct');correct++;} });
+    const total=scene.pieces.length;
+    if(correct===total){
+      App.celebrate(lang==='fr'?'🧩 Parfait !':lang==='pt'?'🧩 Perfeito!':'🧩 Perfect!');
+      setTimeout(()=>render(document.getElementById('activity-body'),lang),2500);
+    } else {
+      const msg=`${correct}/${total} ${lang==='fr'?'correct !':lang==='pt'?'corretos!':'correct!'}`;
+      App.celebrate('🧩 '+msg);
+    }
+  }
+
+  return { render, _pick, _check };
+})();
+
+// stories.js — Pre-written stories + AI daily story
+window.Stories = (() => {
+  let pages=[], pageIdx=0;
+
+  const BUILTIN = [
+    {
+      id:'rainbow',title:{en:'🌈 The Rainbow Bridge',fr:'🌈 Le Pont Arc-en-ciel',pt:'🌈 A Ponte Arco-íris'},
+      coverEmoji:'🌈',coverBg:'linear-gradient(145deg,#FFD6E0,#FFF3CD,#DBEAFE)',
+      pages:[
+        {scene:'☀️\n🌸🌻🌺',bg:'#FFF9E6',text:{en:"One sunny morning, Anna found a shimmering rainbow in her garden. ✨ She had never seen anything so magical!",fr:"Un matin, Anna trouva un arc-en-ciel brillant dans son jardin. ✨ Elle n'avait jamais rien vu d'aussi magique !",pt:"Numa manhã, Anna encontrou um arco-íris brilhante no jardim. ✨ Nunca tinha visto nada tão mágico!"}},
+        {scene:'🌈\n👣💨',bg:'#F0F9FF',text:{en:"She tiptoed closer. The air smelled like strawberries and marshmallows! 🍓",fr:"Elle s'approcha doucement. L'air sentait les fraises et les guimauves ! 🍓",pt:"Foi na ponta dos pés. O ar cheirava a morangos e marshmallows! 🍓"}},
+        {scene:'🐝🦋\n🌈🌷',bg:'#FFF0F5',text:{en:"Butterflies and bees danced all around the rainbow. 🦋🐝 They waved hello to Anna!",fr:"Des papillons et des abeilles dansaient autour de l'arc-en-ciel. 🦋🐝",pt:"Borboletas e abelhas dançavam ao redor. 🦋🐝 Acenaram para a Anna!"}},
+        {scene:'🌈🏡\n⭐💛',bg:'#FFFBE6',text:{en:"At the end of the rainbow was a tiny cosy cloud house! ☁️🏡 A friendly star gave Anna a warm hug. ⭐",fr:"Au bout de l'arc-en-ciel, une petite maison de nuages ! ☁️🏡 Une étoile fit un câlin à Anna. ⭐",pt:"No fim havia uma casinha de nuvens! ☁️🏡 Uma estrela deu um abraço à Anna. ⭐"}},
+        {scene:'💖🌈\n🏠🌟',bg:'#F5F0FF',text:{en:"Anna shared the rainbow's colours with all her friends. 💛💚💜 She skipped home with sparkles in her heart. ✨",fr:"Anna partagea les couleurs avec ses amis. 💛💚💜 Elle rentra chez elle le cœur plein d'étoiles. ✨",pt:"Anna partilhou as cores com os amigos. 💛💚💜 Voltou para casa com brilhinho no coração. ✨"}},
+      ]
+    },
+    {
+      id:'cat',title:{en:'🐱 The Magic Cat',fr:'🐱 Le Chat Magique',pt:'🐱 O Gato Mágico'},
+      coverEmoji:'🐱',coverBg:'linear-gradient(145deg,#E5D4FF,#FFD6E0,#FFF3CD)',
+      pages:[
+        {scene:'🐱\n🌟✨',bg:'#F8F0FF',text:{en:"A fluffy purple cat appeared on Anna's windowsill one evening. 🐱💜 Its fur sparkled like a thousand stars!",fr:"Un soir, un chat violet moelleux apparut sur le rebord de la fenêtre d'Anna. 🐱💜",pt:"Uma noite, um gato roxo fofo apareceu na janela da Anna. 🐱💜 O pelo brilhava!"}},
+        {scene:'🐱🎩\n🌙💫',bg:'#FFF9F0',text:{en:"The cat wore a tiny golden hat and made flowers bloom just by purring! 🎩🌸",fr:"Le chat portait un petit chapeau doré et faisait fleurir des fleurs en ronronnant ! 🎩🌸",pt:"O gato usava um chapéuzinho dourado e fazia flores desabrochar só de ronronar! 🎩🌸"}},
+        {scene:'🐱🦁\n🌿🏞️',bg:'#F0FFF4',text:{en:"The magic cat took Anna on a ride through a jungle of giant flowers! 🌺🌿",fr:"Le chat magique emmena Anna dans une jungle de fleurs géantes ! 🌺🌿",pt:"O gato levou a Anna por uma selva de flores gigantes! 🌺🌿"}},
+        {scene:'🐱🍪\n☕🏠',bg:'#FFF8F0',text:{en:"They had a tea party with tiny cups and yummy biscuits. 🍪☕",fr:"Ils eurent une fête du thé avec de petites tasses et de délicieux biscuits. 🍪☕",pt:"Tiveram uma festa do chá com xícaras minúsculas e biscoitos deliciosos. 🍪☕"}},
+        {scene:'🐱💛\n😴🌙',bg:'#F3E8FF',text:{en:"The magic cat curled up next to Anna and purred her to sleep. 😴💜 It always came back when she needed a friend. 🌟",fr:"Le chat magique se lova près d'Anna et la fit dormir en ronronnant. 😴💜",pt:"O gato enroscou-se ao lado da Anna e ronronou até ela adormecer. 😴💜"}},
+      ]
+    },
+    {
+      id:'star',title:{en:'⭐ Wish Upon a Star',fr:'⭐ Vœux sur une Étoile',pt:'⭐ Desejo numa Estrela'},
+      coverEmoji:'⭐',coverBg:'linear-gradient(145deg,#1a1a4e,#3d2b8a,#7B5EA7)',
+      pages:[
+        {scene:'🌙⭐\n🌌💫',bg:'#1a1a3e',text:{en:"On a clear night, Anna gazed up at the sky full of twinkling stars. 🌙⭐ One star winked right at her!",fr:"Par une nuit claire, Anna regarda le ciel plein d'étoiles. 🌙⭐ Une étoile lui fit un clin d'œil !",pt:"Numa noite clara, Anna olhou para o céu cheio de estrelas. 🌙⭐ Uma estrela piscou para ela!"}},
+        {scene:'💫🌠\n✨🙏',bg:'#16213e',text:{en:"Anna closed her eyes and wished for all children everywhere to be happy. 🙏💛",fr:"Anna ferma les yeux et souhaitait que tous les enfants soient heureux. 🙏💛",pt:"Anna fechou os olhos e desejou felicidade para todas as crianças. 🙏💛"}},
+        {scene:'⭐🌟\n🎁✨',bg:'#0f0f2d',text:{en:"The star glowed brighter and floated down to Anna, leaving golden light in her hands! ⭐✨",fr:"L'étoile brilla et descendit vers Anna, laissant une lumière dorée. ⭐✨",pt:"A estrela brilhou e desceu até à Anna, deixando luz dourada nas mãos dela! ⭐✨"}},
+        {scene:'🌟👶\n🌍💛',bg:'#1a1a4e',text:{en:"Across the world, children woke up feeling warm and loved. 🌍💛 Anna smiled her biggest smile.",fr:"Dans le monde entier, des enfants se réveillèrent avec chaleur et amour. 🌍💛",pt:"Em todo o mundo, crianças acordaram com amor. 🌍💛 A Anna deu o maior sorriso."}},
+        {scene:'⭐😴\n🌙💖',bg:'#16213e',text:{en:"The star whispered goodnight and floated home. 🌙💖 Anna slept knowing her kind wish had touched the whole world. ✨",fr:"L'étoile chuchota bonne nuit et remonta. 🌙💖 Anna dormit paisiblement. ✨",pt:"A estrela sussurrou boa noite e voltou. 🌙💖 A Anna dormiu sabendo que o seu desejo tocou o mundo. ✨"}},
+      ]
+    },
+  ];
+
+  function render(container, lang, daily) {
+    pages=[]; pageIdx=0;
+    container.innerHTML=`<div class="ai-bubble"><span class="cat">🐱</span>${lang==='fr'?"Choisis une histoire ! 📖":lang==='pt'?"Escolhe uma história! 📖":"Choose a story! 📖"}</div>`;
+
+    const controls=document.createElement('div');
+    controls.className='story-controls';
+
+    // AI daily story button (if available)
+    if(daily.story) {
+      const aiTitle=daily.story.title||(lang==='fr'?'✨ Histoire du jour':lang==='pt'?'✨ História do dia':'✨ Today\'s Story');
+      const btn=document.createElement('button');
+      btn.className='story-btn';
+      btn.style.background='linear-gradient(135deg,#FFD166,#FF9F5B)';
+      btn.textContent='🤖 '+aiTitle;
+      btn.onclick=()=>openAIStory(daily.story, lang, container);
+      controls.appendChild(btn);
+    }
+
+    BUILTIN.forEach(s=>{
+      const btn=document.createElement('button');
+      btn.className='story-btn';
+      btn.textContent=s.title[lang]||s.title.en;
+      btn.onclick=()=>openBuiltinStory(s,lang,container);
+      controls.appendChild(btn);
+    });
+    container.appendChild(controls);
+
+    const viewer=document.createElement('div');
+    viewer.className='storybook-viewer'; viewer.id='storybook-viewer';
+    const bookWrap=document.createElement('div'); bookWrap.className='book-wrap'; bookWrap.id='book-wrap';
+    viewer.appendChild(bookWrap);
+    const nav=buildNav(lang);
+    viewer.appendChild(nav);
+    container.appendChild(viewer);
+  }
+
+  function openBuiltinStory(s, lang, container) {
+    pages=[{isCover:true,title:s.title[lang]||s.title.en,emoji:s.coverEmoji,bg:s.coverBg}];
+    s.pages.forEach((p,i)=>pages.push({text:p.text[lang]||p.text.en,scene:p.scene,bg:p.bg,pageNum:i+1,total:s.pages.length}));
+    pageIdx=0;
+    const viewer=document.getElementById('storybook-viewer');
+    const bookWrap=document.getElementById('book-wrap');
+    viewer.classList.add('active');
+    renderPage(bookWrap,0,false);
+    updateNav();
+    setTimeout(()=>TTS.speak(pages[0].title,lang),300);
+  }
+
+  function openAIStory(story, lang, container) {
+    const title=story.title||(lang==='fr'?'Histoire du jour':lang==='pt'?'História do dia':'Today\'s Story');
+    pages=[{isCover:true,title,emoji:'🤖',bg:'linear-gradient(145deg,#FFD6E0,#E5D4FF)'}];
+    (story.pages||[]).forEach((p,i)=>pages.push({
+      text:p.text||(lang==='fr'?p.text:p.text),
+      scene:p.scene||'✨🌟💫',
+      bg:p.bg||'#FFF8F3',pageNum:i+1,total:(story.pages||[]).length
+    }));
+    pageIdx=0;
+    const viewer=document.getElementById('storybook-viewer');
+    viewer.classList.add('active');
+    renderPage(document.getElementById('book-wrap'),0,false);
+    updateNav();
+    setTimeout(()=>TTS.speak(title,lang),300);
+  }
+
+  function buildNav(lang) {
+    const nav=document.createElement('div'); nav.className='book-nav';
+    const prev=document.createElement('button'); prev.className='nav-btn'; prev.id='nav-prev'; prev.textContent='◀'; prev.onclick=()=>turn(-1,lang);
+    const dots=document.createElement('div'); dots.className='page-dots'; dots.id='page-dots';
+    const next=document.createElement('button'); next.className='nav-btn'; next.id='nav-next'; next.textContent='▶'; next.onclick=()=>turn(1,lang);
+    nav.appendChild(prev); nav.appendChild(dots); nav.appendChild(next);
+    return nav;
+  }
+
+  function renderPage(container, idx, animate) {
+    const page=pages[idx]; if(!page) return;
+    const old=container.querySelector('.book-page');
+    if(old&&animate){old.classList.add('flip-out');setTimeout(()=>old.remove(),560);}
+    else if(old) old.remove();
+    const el=document.createElement('div');
+    el.className='book-page'+(animate?' flip-in':'');
+    if(page.isCover){
+      el.style.background=page.bg;
+      el.innerHTML=`<div class="page-cover"><span class="cover-star">${page.emoji}</span><div class="cover-title">${page.title}</div><div style="font-size:1rem;color:#9B5E9B;margin-top:.5em">✨ ${App.lang==='fr'?"Une histoire pour Anna":App.lang==='pt'?"Uma história para Anna":"A story for Anna"} ✨</div></div>`;
+    } else {
+      const textColor=page.bg&&page.bg.startsWith('#1')||page.bg&&page.bg.startsWith('#0')?'white':'#444';
+      el.innerHTML=`
+        <div class="page-illustration" style="background:${page.bg};"><div class="illus-emoji-scene">${page.scene}</div></div>
+        <div class="page-text-area"><div class="page-text">${page.text}</div>
+        <div class="page-footer"><span class="page-num">${App.lang==='fr'?'Page':App.lang==='pt'?'Página':'Page'} ${page.pageNum}/${page.total}</span>
+        <button class="page-read-btn" onclick="Stories._read(${idx})">🔊</button></div></div>`;
+    }
+    container.appendChild(el);
+  }
+
+  function turn(dir, lang) {
+    const ni=pageIdx+dir;
+    if(ni<0||ni>=pages.length) return;
+    TTS.stop(); pageIdx=ni;
+    renderPage(document.getElementById('book-wrap'),pageIdx,true);
+    updateNav();
+    setTimeout(()=>_read(pageIdx),700);
+  }
+
+  function updateNav() {
+    const prev=document.getElementById('nav-prev'),next=document.getElementById('nav-next'),dots=document.getElementById('page-dots');
+    if(!prev) return;
+    prev.disabled=pageIdx===0; next.disabled=pageIdx===pages.length-1;
+    dots.innerHTML=pages.map((_,i)=>`<div class="page-dot ${i===pageIdx?'active':''}"></div>`).join('');
+  }
+
+  function _read(idx) {
+    const page=pages[idx]; if(!page) return;
+    TTS.stop();
+    TTS.speak(page.isCover?page.title:page.text, App.lang);
+  }
+
+  return { render, _read };
+})();
+
+window.Drawing = (() => {
+  let canvas, ctx, drawing=false, lx=0, ly=0;
+  let tool='marker', color='#FF8FAB', size=14, bg='#FFFFFF';
+  let history=[];
+  const COLORS=['#222222','#FFFFFF','#FF3B3B','#FF8FAB','#FF9F5B','#FFD166','#06D6A0','#74B0FF','#B57BFF','#FF69B4','#8B5E3C','#A0C878','#00C5E3','#E040FB','#F9A825'];
+  const BGS=['#FFFFFF','#FFF8F3','#FFF0F5','#F0F9FF','#F3E8FF','#FFFBE6','#F0FFF4','#1a1a3e'];
+  const TOOLS=[{id:'marker',icon:'🖊️',en:'Marker',fr:'Marqueur',pt:'Marcador'},{id:'pencil',icon:'✏️',en:'Pencil',fr:'Crayon',pt:'Lápis'},{id:'crayon',icon:'🖍️',en:'Crayon',fr:'Crayon gras',pt:'Giz de cera'},{id:'brush',icon:'🖌️',en:'Paint',fr:'Pinceau',pt:'Pincel'},{id:'fill',icon:'🪣',en:'Fill',fr:'Remplir',pt:'Balde'},{id:'eraser',icon:'🧹',en:'Eraser',fr:'Gomme',pt:'Borracha'}];
+
+  function render(container, lang) {
+    const greet=lang==='fr'?'Dessine tout ce que tu veux ! 🎨':lang==='pt'?'Desenha o que quiseres! 🎨':'Draw anything you like! 🎨';
+    container.innerHTML=`<div class="ai-bubble"><span class="cat">🐱</span>${greet}</div>`;
+    const studio=document.createElement('div'); studio.className='draw-studio';
+
+    // Toolbar
+    const tb=document.createElement('div'); tb.className='draw-toolbar';
+
+    // Tools
+    const tg=document.createElement('div'); tg.className='tool-group';
+    TOOLS.forEach(t=>{
+      const btn=document.createElement('button');
+      btn.className='tool-btn'+(t.id===tool?' active':'');
+      btn.dataset.toolId=t.id;
+      btn.innerHTML=`${t.icon}<span class="tool-tip">${t[lang]||t.en}</span>`;
+      btn.onclick=()=>{ tool=t.id; document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); if(canvas) canvas.style.cursor=t.id==='fill'||t.id==='eraser'?'cell':'crosshair'; };
+      tg.appendChild(btn);
+    });
+    tb.appendChild(tg);
+    tb.appendChild(sep());
+
+    // Colors
+    const cg=document.createElement('div'); cg.className='color-group';
+    COLORS.forEach(c=>{
+      const sw=document.createElement('div'); sw.className='color-swatch-btn'+(c===color?' active':'');
+      sw.style.background=c; if(c==='#FFFFFF') sw.style.border='3px solid #DDD';
+      sw.onclick=()=>{ color=c; document.querySelectorAll('.color-swatch-btn').forEach(s=>s.classList.remove('active')); sw.classList.add('active'); };
+      cg.appendChild(sw);
+    });
+    tb.appendChild(cg);
+    tb.appendChild(sep());
+
+    // Size
+    const sg=document.createElement('div'); sg.className='size-group';
+    const slider=document.createElement('input'); slider.type='range'; slider.min=2; slider.max=60; slider.value=size; slider.className='size-slider';
+    const preview=document.createElement('div'); preview.className='size-preview'; preview.id='size-prev'; updatePreview(preview,size);
+    slider.oninput=()=>{ size=+slider.value; updatePreview(preview,size); if(ctx) ctx.lineWidth=size; };
+    sg.appendChild(Object.assign(document.createElement('span'),{textContent:'⬤',style:'font-size:.5rem'}));
+    sg.appendChild(slider); sg.appendChild(preview);
+    tb.appendChild(sg);
+    tb.appendChild(sep());
+
+    // BG
+    tb.appendChild(Object.assign(document.createElement('span'),{textContent:'🖼️',style:'font-size:1rem'}));
+    const bgg=document.createElement('div'); bgg.className='bg-group';
+    BGS.forEach(b=>{
+      const btn=document.createElement('div'); btn.className='bg-btn'+(b===bg?' active':''); btn.style.background=b;
+      if(b==='#FFFFFF') btn.style.border='3px solid #DDD';
+      btn.onclick=()=>{ bg=b; document.querySelectorAll('.bg-btn').forEach(x=>x.classList.remove('active')); btn.classList.add('active'); applyBg(); };
+      bgg.appendChild(btn);
+    });
+    tb.appendChild(bgg);
+    tb.appendChild(sep());
+
+    // Actions
+    ['↩ Undo','🗑 Clear','💾 Save'].forEach((label,i)=>{
+      const btn=document.createElement('button');
+      btn.className='draw-action-btn '+(i===0?'btn-info':i===1?'btn-danger':'btn-success');
+      btn.textContent=label;
+      btn.onclick=[undoDraw,clearDraw,saveDraw][i];
+      tb.appendChild(btn);
+    });
+
+    studio.appendChild(tb);
+    const wrap=document.createElement('div'); wrap.className='draw-canvas-wrap';
+    const cv=document.createElement('canvas'); cv.id='draw-canvas'; cv.style.cursor='crosshair';
+    wrap.appendChild(cv); studio.appendChild(wrap);
+    container.appendChild(studio);
+
+    requestAnimationFrame(()=>{
+      const W=wrap.clientWidth||800;
+      cv.width=W; cv.height=Math.round(W*.6);
+      canvas=cv; ctx=cv.getContext('2d'); history=[];
+      applyBg(); setupEvents();
+    });
+  }
+
+  function sep(){const s=document.createElement('div');s.className='toolbar-sep';return s;}
+  function updatePreview(el,sz){const p=Math.max(4,Math.min(sz,32));el.style.width=p+'px';el.style.height=p+'px';}
+  function applyBg(){if(!ctx)return;ctx.save();ctx.globalCompositeOperation='destination-over';ctx.fillStyle=bg;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.restore();if(canvas)canvas.style.background=bg;}
+
+  function setupEvents(){
+    const save=()=>{if(ctx)history.push(ctx.getImageData(0,0,canvas.width,canvas.height));if(history.length>40)history.shift();};
+    canvas.addEventListener('mousedown',e=>{save();drawing=true;[lx,ly]=pos(e);if(tool==='fill'){flood(lx,ly);drawing=false;}});
+    canvas.addEventListener('mousemove',e=>{if(drawing)stroke(e);});
+    canvas.addEventListener('mouseup',()=>drawing=false);
+    canvas.addEventListener('mouseleave',()=>drawing=false);
+    canvas.addEventListener('touchstart',e=>{e.preventDefault();save();drawing=true;[lx,ly]=pos(e);if(tool==='fill'){flood(lx,ly);drawing=false;}},{passive:false});
+    canvas.addEventListener('touchmove',e=>{e.preventDefault();if(drawing)stroke(e);},{passive:false});
+    canvas.addEventListener('touchend',()=>drawing=false);
+  }
+
+  function pos(e){const r=canvas.getBoundingClientRect(),sx=canvas.width/r.width,sy=canvas.height/r.height,src=e.touches?e.touches[0]:e;return[(src.clientX-r.left)*sx,(src.clientY-r.top)*sy];}
+
+  function stroke(e){
+    const[x,y]=pos(e);ctx.save();
+    if(tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=size*2;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(x,y);ctx.stroke();}
+    else if(tool==='pencil'){ctx.globalAlpha=.55;ctx.strokeStyle=color;ctx.lineWidth=Math.max(1,size*.35);ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(x,y);ctx.stroke();}
+    else if(tool==='crayon'){ctx.strokeStyle=color;ctx.lineWidth=size*.7;ctx.lineCap='round';for(let i=0;i<4;i++){ctx.globalAlpha=.18+Math.random()*.22;ctx.beginPath();ctx.moveTo(lx+(Math.random()-.5)*3,ly+(Math.random()-.5)*3);ctx.lineTo(x+(Math.random()-.5)*size*.7,y+(Math.random()-.5)*size*.7);ctx.stroke();}}
+    else if(tool==='brush'){const g=ctx.createRadialGradient(x,y,0,x,y,size);g.addColorStop(0,color+'CC');g.addColorStop(.5,color+'88');g.addColorStop(1,color+'00');ctx.fillStyle=g;ctx.globalAlpha=.35;ctx.beginPath();ctx.arc(x,y,size,0,Math.PI*2);ctx.fill();}
+    else{ctx.globalAlpha=.92;ctx.strokeStyle=color;ctx.lineWidth=size;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(x,y);ctx.stroke();}
+    ctx.restore();[lx,ly]=[x,y];
+  }
+
+  function flood(sx,sy){
+    const W=canvas.width,H=canvas.height,img=ctx.getImageData(0,0,W,H),data=img.data;
+    const i=(Math.round(sy)*W+Math.round(sx))*4;
+    const[tR,tG,tB,tA]=[data[i],data[i+1],data[i+2],data[i+3]];
+    const hex=color.replace('#',''),r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16);
+    if(tR===r&&tG===g&&tB===b)return;
+    const stack=[[Math.round(sx),Math.round(sy)]],vis=new Uint8Array(W*H);
+    const match=j=>Math.abs(data[j]-tR)<30&&Math.abs(data[j+1]-tG)<30&&Math.abs(data[j+2]-tB)<30&&Math.abs(data[j+3]-tA)<30;
+    const paint=j=>{data[j]=r;data[j+1]=g;data[j+2]=b;data[j+3]=255;};
+    while(stack.length){const[cx,cy]=stack.pop();if(cx<0||cy<0||cx>=W||cy>=H)continue;const vi=cy*W+cx;if(vis[vi])continue;vis[vi]=1;const pi=vi*4;if(!match(pi))continue;paint(pi);stack.push([cx+1,cy],[cx-1,cy],[cx,cy+1],[cx,cy-1]);}
+    ctx.putImageData(img,0,0);
+  }
+
+  function undoDraw(){if(!history.length)return;ctx.putImageData(history.pop(),0,0);}
+  function clearDraw(){if(!ctx)return;history.push(ctx.getImageData(0,0,canvas.width,canvas.height));ctx.clearRect(0,0,canvas.width,canvas.height);applyBg();App.celebrate('✨ Fresh canvas!');}
+  function saveDraw(){if(!canvas)return;const t=document.createElement('canvas');t.width=canvas.width;t.height=canvas.height;const c=t.getContext('2d');c.fillStyle=bg;c.fillRect(0,0,t.width,t.height);c.drawImage(canvas,0,0);const a=document.createElement('a');a.href=t.toDataURL('image/png');a.download='anna-drawing.png';a.click();App.celebrate('🎨 Saved!');}
+
+  return { render };
+})();
+
+// ============================================================
+// room.js — App Controller, Navigation, Daily Content Init
+// ============================================================
+
+window.App = (() => {
+  let lang = localStorage.getItem('anna_lang') || 'en';
+  let dailyData = {};
+
+  const LABELS = {
+    en: {
+      roomTitle:"🏠 Anna's Room", back:"Back",
+      letters:"📚 Letters", numbers:"🔢 Numbers", shapes:"🎨 Colors",
+      french:"🇫🇷 French", memory:"🃏 Memory", math:"➕ Math",
+      simon:"🎯 Simon", drag:"🎮 Sort", listen:"🎵 Listen",
+      drawing:"🎨 Draw", stories:"📖 Stories", spelling:"🔤 Spell",
+      rhythm:"🥁 Rhythm", puzzle:"🧩 Puzzle",
+      activities:{ letters:"ABC & Phonics", numbers:"Numbers", shapes:"Colors & Shapes",
+        french:"French Words", memory:"Memory Match", math:"Counting & Math",
+        simon:"Simon Says", drag:"Sort & Match", listen:"Listen & Repeat",
+        drawing:"Drawing Studio", stories:"Story Time", spelling:"Spelling",
+        rhythm:"Rhythm Tap", puzzle:"Picture Puzzle" }
+    },
+    fr: {
+      roomTitle:"🏠 La Chambre d'Anna", back:"Retour",
+      letters:"📚 Lettres", numbers:"🔢 Chiffres", shapes:"🎨 Couleurs",
+      french:"🇫🇷 Français", memory:"🃏 Mémoire", math:"➕ Maths",
+      simon:"🎯 Simon", drag:"🎮 Trier", listen:"🎵 Écoute",
+      drawing:"🎨 Dessin", stories:"📖 Histoire", spelling:"🔤 Épeler",
+      rhythm:"🥁 Rythme", puzzle:"🧩 Puzzle",
+      activities:{ letters:"ABC & Sons", numbers:"Les Chiffres", shapes:"Couleurs & Formes",
+        french:"Mots Français", memory:"Jeu de Mémoire", math:"Compter & Maths",
+        simon:"Simon Dit", drag:"Trier & Associer", listen:"Écouter & Répéter",
+        drawing:"Studio Dessin", stories:"Histoire", spelling:"Épeler",
+        rhythm:"Taper le Rythme", puzzle:"Puzzle" }
+    },
+    pt: {
+      roomTitle:"🏠 O Quarto da Anna", back:"Voltar",
+      letters:"📚 Letras", numbers:"🔢 Números", shapes:"🎨 Cores",
+      french:"🇫🇷 Francês", memory:"🃏 Memória", math:"➕ Matemática",
+      simon:"🎯 Simon", drag:"🎮 Ordenar", listen:"🎵 Ouvir",
+      drawing:"🎨 Desenho", stories:"📖 História", spelling:"🔤 Soletrar",
+      rhythm:"🥁 Ritmo", puzzle:"🧩 Puzzle",
+      activities:{ letters:"ABC & Fonética", numbers:"Números", shapes:"Cores & Formas",
+        french:"Palavras Francesas", memory:"Jogo de Memória", math:"Contar & Matemática",
+        simon:"Simon Diz", drag:"Ordenar & Associar", listen:"Ouvir & Repetir",
+        drawing:"Estúdio de Desenho", stories:"Hora da História", spelling:"Soletrar",
+        rhythm:"Bater o Ritmo", puzzle:"Puzzle" }
+    }
+  };
+
+  const ACTIVITY_MAP = {
+    letters:  () => Letters.render(document.getElementById('activity-body'), lang, dailyData),
+    numbers:  () => Numbers.render(document.getElementById('activity-body'), lang, dailyData),
+    shapes:   () => Shapes.render(document.getElementById('activity-body'), lang, dailyData),
+    french:   () => French.render(document.getElementById('activity-body'), lang, dailyData),
+    listen:   () => Listen.render(document.getElementById('activity-body'), lang, dailyData),
+    drag:     () => Drag.render(document.getElementById('activity-body'), lang, dailyData),
+    memory:   () => Memory.render(document.getElementById('activity-body'), lang, dailyData),
+    math:     () => MathAct.render(document.getElementById('activity-body'), lang, dailyData),
+    spelling: () => Spelling.render(document.getElementById('activity-body'), lang, dailyData),
+    simon:    () => Simon.render(document.getElementById('activity-body'), lang, dailyData),
+    rhythm:   () => Rhythm.render(document.getElementById('activity-body'), lang, dailyData),
+    puzzle:   () => Puzzle.render(document.getElementById('activity-body'), lang, dailyData),
+    stories:  () => Stories.render(document.getElementById('activity-body'), lang, dailyData),
+    drawing:  () => Drawing.render(document.getElementById('activity-body'), lang),
+  };
+
+  function t(key) { return LABELS[lang]?.[key] || LABELS.en[key] || key; }
+  function ta(key) { return LABELS[lang]?.activities?.[key] || LABELS.en.activities[key] || key; }
+
+  function showScreen(id) {
+    TTS.stop();
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function setLang(l) {
+    lang = l;
+    localStorage.setItem('anna_lang', l);
+    const flags = { en:'🇬🇧', fr:'🇫🇷', pt:'🇧🇷' };
+    document.getElementById('lang-flag-btn').textContent = flags[l];
+    updateRoomLabels();
+    showScreen('bedroom-screen');
+  }
+
+  function openActivity(name) {
+    TTS.stop();
+    document.getElementById('activity-title').textContent = ta(name);
+    document.getElementById('back-label').textContent = t('back');
+    document.getElementById('activity-body').innerHTML = '';
+    showScreen('activity-screen');
+    const fn = ACTIVITY_MAP[name];
+    if (fn) fn();
+  }
+
+  function goBack() {
+    TTS.stop();
+    showScreen('bedroom-screen');
+  }
+
+  function updateRoomLabels() {
+    const s = (id, v) => { const e = document.getElementById(id); if(e) e.textContent = v; };
+    s('room-title', t('roomTitle'));
+    s('badge-letters', t('letters')); s('badge-numbers', t('numbers'));
+    s('badge-shapes', t('shapes')); s('badge-french', t('french'));
+    s('badge-memory', t('memory')); s('badge-math', t('math'));
+    s('badge-simon', t('simon')); s('badge-drag', t('drag'));
+    s('badge-listen', t('listen')); s('badge-drawing', t('drawing'));
+    s('badge-stories', t('stories')); s('badge-spelling', t('spelling'));
+    s('badge-rhythm', t('rhythm')); s('badge-puzzle', t('puzzle'));
+  }
+
+  // ── CELEBRATE ──
+  function celebrate(msg) {
+    const el = document.getElementById('star-burst');
+    el.textContent = msg || '🌟';
+    const c = document.getElementById('celebrate');
+    c.classList.add('active');
+    launchConfetti();
+    setTimeout(() => c.classList.remove('active'), 2500);
+  }
+
+  function launchConfetti() {
+    const c = document.getElementById('celebrate');
+    const colors = ['#FF8FAB','#B57BFF','#FFD166','#06D6A0','#74B0FF','#FF9F5B'];
+    for (let i = 0; i < 70; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      const size = Math.random() * 12 + 6;
+      el.style.cssText = `width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*colors.length)]};left:${Math.random()*100}vw;top:-20px;border-radius:${Math.random()>.5?'50%':'3px'};animation-duration:${Math.random()*1.5+1}s;animation-delay:${Math.random()*.5}s;`;
+      c.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+  }
+
+  // ── BACKGROUND DECORATIONS ──
+  function buildBgStars() {
+    const c = document.getElementById('bg-stars');
+    const emojis = ['⭐','🌟','✨','💫','🌸','🦋','🎀'];
+    for (let i = 0; i < 15; i++) {
+      const el = document.createElement('div');
+      el.className = 'bg-star';
+      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.animationDuration = (Math.random() * 15 + 10) + 's';
+      el.style.animationDelay = (Math.random() * 10) + 's';
+      c.appendChild(el);
+    }
+  }
+
+  function buildWallStars() {
+    const c = document.getElementById('wall-stars');
+    for (let i = 0; i < 22; i++) {
+      const el = document.createElement('div');
+      el.className = 'wstar';
+      el.textContent = ['⭐','🌟','✨','💫','🌸','🎀','🌙','🦋'][Math.floor(Math.random()*8)];
+      el.style.left = Math.random() * 100 + '%';
+      el.style.top = Math.random() * 90 + '%';
+      el.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
+      el.style.animationDelay = Math.random() * 3 + 's';
+      c.appendChild(el);
+    }
+  }
+
+  // ── DAILY AI CONTENT LOADING ──
+  async function loadDailyContent() {
+    const bar = document.getElementById('loading-bar');
+    const sub = document.getElementById('loading-sub');
+    const steps = [
+      { label: 'Picking today\'s story theme...', key: 'story',   fn: () => AI.generateDailyStory(lang) },
+      { label: 'Shuffling memory cards...',       key: 'memory',  fn: () => AI.generateMemoryCards(lang) },
+      { label: 'Finding spelling words...',       key: 'spelling',fn: () => AI.generateSpellingWords(lang) },
+      { label: 'Making math questions...',        key: 'math',    fn: () => AI.generateMathProblems(lang) },
+      { label: 'Building sort game...',           key: 'drag',    fn: () => AI.generateDragGame(lang) },
+      { label: 'Loading vocabulary...',           key: 'vocab',   fn: () => AI.generateVocabWords(lang) },
+    ];
+
+    for (let i = 0; i < steps.length; i++) {
+      const step = steps[i];
+      if (sub) sub.textContent = step.label + ' ✨';
+      if (bar) bar.style.width = ((i / steps.length) * 85) + '%';
+      try {
+        const result = await step.fn();
+        if (result) dailyData[step.key] = result;
+      } catch(e) { console.warn(`Daily content step ${step.key} failed:`, e.message); }
+    }
+
+    if (bar) bar.style.width = '100%';
+    if (sub) sub.textContent = 'Ready! 🎉';
+    await new Promise(r => setTimeout(r, 400));
+
+    const ls = document.getElementById('loading-screen');
+    ls.classList.add('hidden');
+    setTimeout(() => ls.style.display = 'none', 500);
+  }
+
+  // ── INIT ──
+  function init() {
+    buildBgStars();
+    buildWallStars();
+    updateRoomLabels();
+    // Preload web speech voices
+    if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    // Load daily AI content in background, show app immediately after min delay
+    loadDailyContent();
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+
+  return { setLang, showScreen, openActivity, goBack, celebrate, get lang() { return lang; }, get daily() { return dailyData; } };
+})();
+</script>
+</body>
+</html>
